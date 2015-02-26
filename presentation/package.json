@@ -1,0 +1,21 @@
+{
+  "name": "android-fundamentals-course",
+  "version": "0.0.0",
+  "description": "Android Fundamentals Course",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "node-static": "~0.6.6",
+    "socket.io": "~0.9.13"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/hackafe/android-fundamentals-course.git"
+  },
+  "keywords": ["node", "reveal.js", "socket.io", "presentation"],
+  "author": "Geno Roupsky",
+  "license": "MIT"
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Android Fundamentals Course",
+  "description": "Android Fundamentals Course",
+  "repository": "https://github.com/hackafe/android-fundamentals-course",
+  "keywords": ["node", "reveal.js", "socket.io", "presentation"]
+}
