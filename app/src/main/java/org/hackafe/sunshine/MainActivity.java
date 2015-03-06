@@ -10,6 +10,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -60,6 +64,22 @@ public class MainActivity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+            // 1) using only findViewById populate 4 rows
+            TextView row1 = (TextView)rootView.findViewById(R.id.row1);
+            TextView row2 = (TextView)rootView.findViewById(R.id.row2);
+            TextView row3 = (TextView)rootView.findViewById(R.id.row3);
+            TextView row4 = (TextView)rootView.findViewById(R.id.row4);
+            TextView row5 = (TextView)rootView.findViewById(R.id.row5);
+            TextView row6 = (TextView)rootView.findViewById(R.id.row6);
+
+            row1.setText("Sunday");
+            row2.setText("Monday");
+            row3.setText("Tuesday");
+            row4.setText("Wednesday");
+            row5.setText("Thursday");
+            row6.setText("Friday");
+
             return rootView;
         }
     }
