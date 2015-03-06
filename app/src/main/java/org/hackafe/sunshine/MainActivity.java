@@ -66,19 +66,28 @@ public class MainActivity extends ActionBarActivity {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
             // 1) using only findViewById populate 4 rows
-            TextView row1 = (TextView)rootView.findViewById(R.id.row1);
-            TextView row2 = (TextView)rootView.findViewById(R.id.row2);
-            TextView row3 = (TextView)rootView.findViewById(R.id.row3);
-            TextView row4 = (TextView)rootView.findViewById(R.id.row4);
-            TextView row5 = (TextView)rootView.findViewById(R.id.row5);
-            TextView row6 = (TextView)rootView.findViewById(R.id.row6);
+//            TextView row1 = (TextView)rootView.findViewById(R.id.row1);
+//            TextView row2 = (TextView)rootView.findViewById(R.id.row2);
+//            TextView row3 = (TextView)rootView.findViewById(R.id.row3);
+//            TextView row4 = (TextView)rootView.findViewById(R.id.row4);
+//            TextView row5 = (TextView)rootView.findViewById(R.id.row5);
+//            TextView row6 = (TextView)rootView.findViewById(R.id.row6);
+//
+//            row1.setText("Sunday");
+//            row2.setText("Monday");
+//            row3.setText("Tuesday");
+//            row4.setText("Wednesday");
+//            row5.setText("Thursday");
+//            row6.setText("Friday");
 
-            row1.setText("Sunday");
-            row2.setText("Monday");
-            row3.setText("Tuesday");
-            row4.setText("Wednesday");
-            row5.setText("Thursday");
-            row6.setText("Friday");
+            // 2) using inflater.inflate and R.layout.list_item_forecast populate 10 000 rows
+            LinearLayout list = (LinearLayout) rootView.findViewById(R.id.container);
+            for (int i = 1; i <= 10000; i++) {
+                View rootRowView = inflater.inflate(R.layout.list_item_forecast, container, false);
+                TextView label = (TextView)rootRowView.findViewById(R.id.list_item_forecast_listview);
+                label.setText("I'm row #"+i);
+                list.addView(rootRowView);
+            }
 
             return rootView;
         }
