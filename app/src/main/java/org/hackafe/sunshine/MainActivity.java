@@ -81,15 +81,57 @@ public class MainActivity extends ActionBarActivity {
 //            row6.setText("Friday");
 
             // 2) using inflater.inflate and R.layout.list_item_forecast populate 10 000 rows
-            LinearLayout list = (LinearLayout) rootView.findViewById(R.id.container);
-            for (int i = 1; i <= 10000; i++) {
-                View rootRowView = inflater.inflate(R.layout.list_item_forecast, container, false);
-                TextView label = (TextView)rootRowView.findViewById(R.id.list_item_forecast_listview);
-                label.setText("I'm row #"+i);
-                list.addView(rootRowView);
-            }
+//            LinearLayout list = (LinearLayout) rootView.findViewById(R.id.container);
+//            for (int i = 1; i <= 10000; i++) {
+//                View rootRowView = inflater.inflate(R.layout.list_item_forecast, container, false);
+//                TextView label = (TextView)rootRowView.findViewById(R.id.list_item_forecast_listview);
+//                label.setText("I'm row #"+i);
+//                list.addView(rootRowView);
+//            }
+
+            // 3) use ListView and display 100 000 rows
+            BaseAdapter adapter = new ForecastAdapter(inflater);
+            ListView collection = (ListView) rootView.findViewById(R.id.container);
+            collection.setAdapter(adapter);
 
             return rootView;
+        }
+    }
+
+    public static class ForecastAdapter extends BaseAdapter {
+
+        LayoutInflater inflater;
+
+        public ForecastAdapter(LayoutInflater inflater) {
+            // we need the inflater so we can create the row layout in getView()
+            this.inflater = inflater;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View rootRowView = inflater.inflate(R.layout.list_item_forecast, parent, false);
+            TextView label = (TextView) rootRowView.findViewById(R.id.list_item_forecast_listview);
+            label.setText("I'm row #" + position);
+
+            return rootRowView;
+        }
+
+        @Override
+        public int getCount() {
+            // we have 100 000 rows
+            return 100000;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            // our object is basicly the position
+            return position;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            // the position serves as itemId
+            return position;
         }
     }
 }
