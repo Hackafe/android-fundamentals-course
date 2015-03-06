@@ -109,7 +109,14 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View rootRowView = inflater.inflate(R.layout.list_item_forecast, parent, false);
+            // 4) use convertView to speedup scrolling
+            View rootRowView;
+            if (convertView != null) {
+                rootRowView = convertView;
+            } else {
+                rootRowView = inflater.inflate(R.layout.list_item_forecast, parent, false);
+            }
+
             TextView label = (TextView) rootRowView.findViewById(R.id.list_item_forecast_listview);
             label.setText("I'm row #" + position);
 
