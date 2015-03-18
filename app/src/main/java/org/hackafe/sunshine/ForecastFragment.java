@@ -4,29 +4,23 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -51,39 +45,17 @@ public class ForecastFragment extends Fragment {
         List<String> forecast = parseForecast(data);
 
 
-        final ForecastAdapter adapter = new ForecastAdapter(inflater);
+        final ForecastAdapter adapter = new ForecastAdapter(inflater, forecast);
+        ArrayAdapter<String> forecastArrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
+        forecastArrayAdapter.addAll(forecast);
         final ListView collection = (ListView) rootView.findViewById(R.id.container);
         collection.setAdapter(adapter);
 
 
         final EditText countInput = (EditText)rootView.findViewById(R.id.countInput);
-        countInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_NULL
-                        && event.getAction() == KeyEvent.ACTION_DOWN) {
-                    adapter.addOneItem(Integer.valueOf(countInput.getText().toString()));
-                    collection.setSelection(adapter.getCount() - 1);
-                }
-                return false;
-            }
-        });
 
 
         Button addMoreBtn = (Button) rootView.findViewById(R.id.btn_add_more_items);
-        addMoreBtn.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                try {
-                    adapter.addOneItem(Integer.valueOf(countInput.getText().toString()));
-                } catch (RuntimeException e) {
-                    Log.e("Sunshine", e.getMessage(), e);
-                    Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-                collection.setSelection(adapter.getCount() - 1);
-            }
-        });
 
 
 
@@ -93,6 +65,7 @@ public class ForecastFragment extends Fragment {
 
     private List<String> parseForecast(String data) {
         try {
+            List<String> forecastList = new ArrayList<String>();
             // parse String so we have JSONObject
             JSONObject obj = new JSONObject(data);
             // get "list" field as array
@@ -121,13 +94,14 @@ public class ForecastFragment extends Fragment {
 
 
                 String forecast = String.format("%s - %s   %.1f°C", dateStr, description, dayTemp);
+                forecastList.add(forecast);
                 Log.d("Sunshine", "forecast = "+forecast);
             }
+            return forecastList;
         } catch (Throwable t) {
             Log.e("Sunshine", t.getMessage(), t);
             return null;
         }
-        return null;
     }
 
     private String getForecast() {
