@@ -4,19 +4,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/countInput"
+    <TextView
+        android:id="@+id/users_count"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="number"
-        android:imeActionLabel="Add rows"
-        android:text="1"/>
+        android:textSize="14dp"/>
 
-    <Button
-        android:id="@+id/btn_add_more_items"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Add more items"/>
 
     <ListView
         android:id="@+id/container"

@@ -11,16 +11,16 @@ import java.util.List;
 /**
 * Created by groupsky on 11.03.15.
 */
-public class ForecastAdapter extends BaseAdapter {
+public class UsersAdapter extends BaseAdapter {
 
 
-    private List<String> daysForecastList;
+    private List<User> users;
     LayoutInflater inflater;
 
-    public ForecastAdapter(LayoutInflater inflater, List<String> daysForecastList) {
+    public UsersAdapter(LayoutInflater inflater, List<User> users) {
         // we need the inflater so we can create the row layout in getView()
         this.inflater = inflater;
-        this.daysForecastList = daysForecastList;
+        this.users = users;
 
     }
 
@@ -34,20 +34,25 @@ public class ForecastAdapter extends BaseAdapter {
             rootRowView = inflater.inflate(R.layout.list_item_forecast, parent, false);
         }
 
-        TextView label = (TextView) rootRowView.findViewById(R.id.list_item_forecast_listview);
-        label.setText(daysForecastList.get(position));
+        TextView nameTv = (TextView) rootRowView.findViewById(R.id.user_name);
+        TextView facebookTv = (TextView) rootRowView.findViewById(R.id.user_facebook);
+
+        User user = users.get(position);
+        nameTv.setText(user.firstName + " " + user.lastName);
+        facebookTv.setText(String.format("Facebook: %s",user.facebook));
+
 
         return rootRowView;
     }
 
     @Override
     public int getCount() {
-        return daysForecastList.size();
+        return users.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return daysForecastList.get(position);
+        return users.get(position);
     }
 
     @Override
