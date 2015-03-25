@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,15 +43,19 @@ public class ForecastFragment extends Fragment {
                 .permitAll().build();
         StrictMode.setThreadPolicy(policy);
         String data = getForecast();
-        List<String> forecast = parseForecast(data);
+        List<Forecast> forecast = parseForecast(data);
 
 
         final ForecastAdapter adapter = new ForecastAdapter(inflater, forecast);
-        ArrayAdapter<String> forecastArrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
-        forecastArrayAdapter.addAll(forecast);
         final ListView collection = (ListView) rootView.findViewById(R.id.container);
         collection.setAdapter(adapter);
 
+        collection.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+        });
 
         final EditText countInput = (EditText)rootView.findViewById(R.id.countInput);
 
@@ -63,9 +68,9 @@ public class ForecastFragment extends Fragment {
         return rootView;
     }
 
-    private List<String> parseForecast(String data) {
+    private List<Forecast> parseForecast(String data) {
         try {
-            List<String> forecastList = new ArrayList<String>();
+            List<Forecast> forecastList = new ArrayList<>();
             // parse String so we have JSONObject
             JSONObject obj = new JSONObject(data);
             // get "list" field as array
@@ -92,8 +97,9 @@ public class ForecastFragment extends Fragment {
                 long dt = forecastObj.getLong("dt");
                 String dateStr = SimpleDateFormat.getDateInstance().format(new Date(dt*1000));
 
-
-                String forecast = String.format("%s - %s   %.1f°C", dateStr, description, dayTemp);
+                Forecast forecast = new Forecast();
+                forecast.desc = String.format("%s - %s   %.1f°C", dateStr, description, dayTemp);
+                forecast.timestamp = dt;
                 forecastList.add(forecast);
                 Log.d("Sunshine", "forecast = "+forecast);
             }

@@ -14,10 +14,10 @@ import java.util.List;
 public class ForecastAdapter extends BaseAdapter {
 
 
-    private List<String> daysForecastList;
+    private List<Forecast> daysForecastList;
     LayoutInflater inflater;
 
-    public ForecastAdapter(LayoutInflater inflater, List<String> daysForecastList) {
+    public ForecastAdapter(LayoutInflater inflater, List<Forecast> daysForecastList) {
         // we need the inflater so we can create the row layout in getView()
         this.inflater = inflater;
         this.daysForecastList = daysForecastList;
@@ -35,7 +35,8 @@ public class ForecastAdapter extends BaseAdapter {
         }
 
         TextView label = (TextView) rootRowView.findViewById(R.id.list_item_forecast_listview);
-        label.setText(daysForecastList.get(position));
+        Forecast forecast = daysForecastList.get(position);
+        label.setText(forecast.desc);
 
         return rootRowView;
     }
