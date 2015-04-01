@@ -1,5 +1,6 @@
 package org.hackafe.sunshine;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
@@ -53,6 +54,11 @@ public class ForecastFragment extends Fragment {
         collection.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Forecast item = (Forecast) adapter.getItem(position);
+                Intent intent = new Intent(getActivity(), DayForecast.class);
+                intent.putExtra("timestamp", item.timestamp);
+                intent.putExtra("desc", item.desc);
+                startActivity(intent);
 
             }
         });
