@@ -57,7 +57,7 @@ public class ForecastFragment extends Fragment {
                 Forecast item = (Forecast) adapter.getItem(position);
                 Intent intent = new Intent(getActivity(), DayForecast.class);
                 intent.putExtra("timestamp", item.timestamp);
-                intent.putExtra("desc", item.desc);
+                intent.putExtra(Intent.EXTRA_TEXT, item.desc);
                 startActivity(intent);
 
             }
