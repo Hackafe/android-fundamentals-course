@@ -44,7 +44,7 @@ public class ForecastFragment extends Fragment {
                 .permitAll().build();
         StrictMode.setThreadPolicy(policy);
         String data = getForecast();
-        final List<Forecast> forecast = parseForecast(data);
+        List<Forecast> forecast = parseForecast(data);
 
 
         final ForecastAdapter adapter = new ForecastAdapter(inflater, forecast);
@@ -58,11 +58,6 @@ public class ForecastFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), DayForecast.class);
                 intent.putExtra("TIMESTAMP", item.timestamp);
                 intent.putExtra(Intent.EXTRA_TEXT, item.desc);
-                startActivity(intent);
-
-                Intent intent = new Intent(getActivity(), DayForecast.class);
-                intent.putExtra(Intent.EXTRA_TEXT, forecast.get(position).desc);
-                intent.putExtra("TIMESTAMP", forecast.get(position).timestamp);
                 startActivity(intent);
 
             }
