@@ -20,8 +20,11 @@ public class DayForecast extends ActionBarActivity {
 
         Intent intent = getIntent();
         SimpleDateFormat date = new SimpleDateFormat("MMM dd yyyy", Locale.US);
+        TextView txtForDate = (TextView) findViewById(R.id.txtForDate);
         TextView txtDayForecast = (TextView) findViewById(R.id.txtDayForecast);
-        txtDayForecast.setText(intent.getStringExtra(Intent.EXTRA_TEXT) + "\n" + date.format(intent.getLongExtra("TIMESTAMP", System.currentTimeMillis())*1000));
+
+        txtForDate.setText("Forecast for date " + date.format(intent.getLongExtra("TIMESTAMP", System.currentTimeMillis()) * 1000));
+        txtDayForecast.setText(intent.getStringExtra(Intent.EXTRA_TEXT));
 
     }
 
