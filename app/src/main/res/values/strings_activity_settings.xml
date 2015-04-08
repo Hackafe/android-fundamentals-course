@@ -1,0 +1,21 @@
+<resources>
+    <string name="title_activity_settings">Settings</string>
+
+    <string name="pref_title_location">Location</string>
+    <string name="pref_summary_location">Select location</string>
+    <string name="pref_default_location">Plovdiv</string>
+
+    <string name="pref_cat_units">Units</string>
+    <string name="pref_units">Units</string>
+    <string name="pref_default_unit">Metric</string>
+
+    <string-array name="pref_units_list_titles">
+        <item>Metric</item>
+        <item>Imperial</item>
+    </string-array>
+    <string-array name="pref_units_list_values">
+        <item>Metric</item>
+        <item>Imperial</item>
+    </string-array>
+
+</resources>
