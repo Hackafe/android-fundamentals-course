@@ -1,8 +1,10 @@
 package org.hackafe.sunshine;
 
 import android.content.Intent;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -12,6 +14,9 @@ import java.util.Locale;
 
 
 public class DayForecast extends ActionBarActivity {
+
+    Intent shareIntent;
+    private ShareActionProvider mShareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +31,15 @@ public class DayForecast extends ActionBarActivity {
         txtForDate.setText("Forecast for date " + date.format(intent.getLongExtra("TIMESTAMP", System.currentTimeMillis()) * 1000));
         txtDayForecast.setText(intent.getStringExtra(Intent.EXTRA_TEXT));
 
+        //Make a string from the HashTag and the weather forecast
+        String shareHashTag = "#SunshineApp " + txtDayForecast.getText();
+
+        //Create Intent
+        shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareHashTag);
+
     }
 
 
@@ -33,6 +47,16 @@ public class DayForecast extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_day_forecast, menu);
+
+        // Locate MenuItem with ShareActionProvider
+        MenuItem item = menu.findItem(R.id.menu_item_share);
+        // Fetch and store ShareActionProvider
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(shareIntent);
+        }
+        // Return true to display menu
         return true;
     }
 
