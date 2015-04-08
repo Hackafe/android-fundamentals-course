@@ -1,8 +1,10 @@
 package org.hackafe.sunshine;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +32,8 @@ import java.util.List;
  * A placeholder fragment containing a simple view.
  */
 public class ForecastFragment extends Fragment {
+    SharedPreferences mSharedPreferences;
+    String prefUnits;
 
     public ForecastFragment() {
     }
@@ -38,6 +42,10 @@ public class ForecastFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        prefUnits = mSharedPreferences.getString("pref_units", "Metric");
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy
                 .Builder()
@@ -63,12 +71,10 @@ public class ForecastFragment extends Fragment {
             }
         });
 
-        final EditText countInput = (EditText)rootView.findViewById(R.id.countInput);
+        final EditText countInput = (EditText) rootView.findViewById(R.id.countInput);
 
 
         Button addMoreBtn = (Button) rootView.findViewById(R.id.btn_add_more_items);
-
-
 
 
         return rootView;
@@ -82,7 +88,7 @@ public class ForecastFragment extends Fragment {
             // get "list" field as array
             JSONArray list = obj.getJSONArray("list");
             // iterate array and get forecast
-            for (int i=0; i<list.length(); i++) {
+            for (int i = 0; i < list.length(); i++) {
                 // get "i"th forecast
                 JSONObject forecastObj = list.getJSONObject(i);
 
@@ -101,13 +107,19 @@ public class ForecastFragment extends Fragment {
 
                 // extract "dt" date time in unix epoch format
                 long dt = forecastObj.getLong("dt");
-                String dateStr = SimpleDateFormat.getDateInstance().format(new Date(dt*1000));
+                String dateStr = SimpleDateFormat.getDateInstance().format(new Date(dt * 1000));
+                String degrees;
+
+                if (prefUnits.equals("Metric"))
+                    degrees = "C";
+                else
+                    degrees = "F";
 
                 Forecast forecast = new Forecast();
-                forecast.desc = String.format("%s - %s   %.1f°C", dateStr, description, dayTemp);
+                forecast.desc = String.format("%s - %s   %.1f°%s", dateStr, description, dayTemp, degrees);
                 forecast.timestamp = dt;
                 forecastList.add(forecast);
-                Log.d("Sunshine", "forecast = "+forecast);
+                Log.d("Sunshine", "forecast = " + forecast);
             }
             return forecastList;
         } catch (Throwable t) {
@@ -118,7 +130,9 @@ public class ForecastFragment extends Fragment {
 
     private String getForecast() {
         try {
-            URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=Plovdiv&mode=json&units=metric&cnt=7");
+            URL url = new URL(String.format("http://api.openweathermap.org/data/2.5/forecast/daily?q=%s&mode=json&units=%s&cnt=7",
+                    mSharedPreferences.getString("pref_location", "Plovdiv"),
+                    prefUnits));
             InputStream inputStream = url.openStream();
             try {
                 BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));

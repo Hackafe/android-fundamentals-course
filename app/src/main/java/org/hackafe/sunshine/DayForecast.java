@@ -1,6 +1,8 @@
 package org.hackafe.sunshine;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -40,6 +42,14 @@ public class DayForecast extends ActionBarActivity {
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, shareHashTag);
 
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setBackgroundDrawable(new
+                ColorDrawable(Color.parseColor("#ffffff")));
+        getSupportActionBar();
+
     }
 
 
@@ -62,16 +72,16 @@ public class DayForecast extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return (true);
+            case R.id.action_settings: {
+                return true;
+            }
         }
 
-        return super.onOptionsItemSelected(item);
+            return super.onOptionsItemSelected(item);
+        }
     }
-}
