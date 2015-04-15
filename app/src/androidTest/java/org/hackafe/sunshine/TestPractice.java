@@ -14,4 +14,12 @@ public class TestPractice extends AndroidTestCase {
         assertEquals(a, b);
     }
 
+    public void testIntegersNotEquals() throws Exception {
+        int expected = 5;
+        int actual = 3;
+
+        if (expected == actual)
+            fail("but they are equals :'(");
+    }
+
 }
