@@ -76,7 +76,8 @@ public class TestDatabase extends AndroidTestCase {
         boolean found = false;
         assertTrue(c.moveToFirst());
         do {
-            if (c.getString(0) == "forecast")
+            System.out.println("table = "+c.getString(0));
+            if ("forecast".equals(c.getString(0)))
                 found = true;
         } while (c.moveToNext());
 
