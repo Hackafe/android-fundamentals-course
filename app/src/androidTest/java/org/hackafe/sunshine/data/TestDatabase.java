@@ -1,6 +1,8 @@
 package org.hackafe.sunshine.data;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
@@ -55,7 +57,29 @@ public class TestDatabase extends AndroidTestCase {
         assertEquals(WeatherDbHelper.DATABASE_VERSION, db.getVersion());
     }
 
-    public void testTablesExists() throws Exception {
+    public void testSqlErrorProducesException() throws Exception {
+        SQLiteDatabase db = helper.getReadableDatabase();
 
+        try {
+            Cursor c = db.rawQuery("hackafe is the best", null);
+            fail("sql garbage does't produce exception!");
+        } catch (SQLiteException e) {
+
+        }
+    }
+
+    public void testTablesExists() throws Exception {
+        SQLiteDatabase db = helper.getReadableDatabase();
+
+        Cursor c = db.rawQuery("select name from sqlite_master where type = 'table' ", null);
+
+        boolean found = false;
+        assertTrue(c.moveToFirst());
+        do {
+            if (c.getString(0) == "forecast")
+                found = true;
+        } while (c.moveToNext());
+
+        assertTrue("table forecast was not found!", found);
     }
 }
