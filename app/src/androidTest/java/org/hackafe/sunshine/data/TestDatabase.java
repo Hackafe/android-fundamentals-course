@@ -6,6 +6,9 @@ import android.database.sqlite.SQLiteException;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
+import org.hackafe.sunshine.Forecast;
+
+import java.util.Date;
 import java.util.HashSet;
 
 /**
@@ -100,5 +103,39 @@ public class TestDatabase extends AndroidTestCase {
         } while (cursor.moveToNext());
 
         assertEquals(0, expectedColumn.size());
+    }
+
+    public void testSaveNewForecast() throws Exception {
+        long timestamp = new Date().getTime();
+        String forecastStr = "sunny all day long with chance for pizza";
+        Forecast forecast = new Forecast(timestamp,
+                forecastStr);
+        helper.saveNewForecast(forecast);
+
+        Cursor cursor = db.query(
+                // table name
+                "forecast",
+                // select field
+                new String[]{"forecast", "date"},
+                // where clause
+                "date = ?",
+                // where argument
+                new String[]{Long.toString(timestamp)},
+                // group by
+                null,
+                // having
+                null,
+                // order by
+                null
+                );
+
+        // check for single record
+        assertEquals(1, cursor.getCount());
+        // check we can move to the first record
+        assertTrue(cursor.moveToFirst());
+        // check forecast column == our forecast string
+        assertEquals(forecastStr, cursor.getString(0));
+        // check date column == our date
+        assertEquals(timestamp, cursor.getLong(1));
     }
 }

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import org.hackafe.sunshine.Forecast;
+
 /**
  * Created by groupsky on 15.04.15.
  */
@@ -29,5 +31,8 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onCreate(db);
+    }
+
+    public void saveNewForecast(Forecast forecast) {
     }
 }
