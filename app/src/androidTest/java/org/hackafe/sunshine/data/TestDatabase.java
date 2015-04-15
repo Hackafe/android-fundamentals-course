@@ -80,7 +80,7 @@ public class TestDatabase extends AndroidTestCase {
         assertTrue(c.moveToFirst());
         do {
             System.out.println("table = " + c.getString(0));
-            if ("forecast".equals(c.getString(0)))
+            if (WeatherContract.ForecastTable.TABLE_NAME.equals(c.getString(0)))
                 found = true;
         } while (c.moveToNext());
 
@@ -89,11 +89,11 @@ public class TestDatabase extends AndroidTestCase {
 
     public void testForecastHasAllColumn() throws Exception {
         HashSet<String> expectedColumn = new HashSet<>();
-        expectedColumn.add("_id");
-        expectedColumn.add("forecast");
-        expectedColumn.add("date");
+        expectedColumn.add(WeatherContract.ForecastTable._ID);
+        expectedColumn.add(WeatherContract.ForecastTable.COLUMN_DATE);
+        expectedColumn.add(WeatherContract.ForecastTable.COLUMN_FORECAST);
 
-        Cursor cursor = db.rawQuery("PRAGMA table_info(forecast)", null);
+        Cursor cursor = db.rawQuery("PRAGMA table_info("+WeatherContract.ForecastTable.TABLE_NAME+")", null);
         int name_idx = cursor.getColumnIndex("name");
 
         assertTrue(cursor.moveToFirst());
@@ -114,11 +114,11 @@ public class TestDatabase extends AndroidTestCase {
 
         Cursor cursor = db.query(
                 // table name
-                "forecast",
+                WeatherContract.ForecastTable.TABLE_NAME,
                 // select field
-                new String[]{"forecast", "date"},
+                WeatherContract.ForecastTable.PROJECTION,
                 // where clause
-                "date = ?",
+                WeatherContract.ForecastTable.COLUMN_DATE+" = ?",
                 // where argument
                 new String[]{Long.toString(timestamp)},
                 // group by
@@ -134,13 +134,13 @@ public class TestDatabase extends AndroidTestCase {
         // check we can move to the first record
         assertTrue(cursor.moveToFirst());
         // check forecast column == our forecast string
-        assertEquals(forecastStr, cursor.getString(0));
+        assertEquals(forecastStr, cursor.getString(WeatherContract.ForecastTable.INDEX_FORECAST));
         // check date column == our date
-        assertEquals(timestamp, cursor.getLong(1));
+        assertEquals(timestamp, cursor.getLong(WeatherContract.ForecastTable.INDEX_DATE));
     }
 
     // TODO validate only one record per day (try to insert 2 for a single day)
     // TODO validate bad data
     // TODO validate we have a unique id for the inserted record
-    
+
 }
