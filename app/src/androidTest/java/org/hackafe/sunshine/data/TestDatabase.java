@@ -6,17 +6,22 @@ import android.database.sqlite.SQLiteException;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
+import java.util.HashSet;
+
 /**
  * Created by groupsky on 15.04.15.
  */
 public class TestDatabase extends AndroidTestCase {
 
     WeatherDbHelper helper;
+    SQLiteDatabase db;
+
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         helper = new WeatherDbHelper(getContext());
+        db = helper.getReadableDatabase();
     }
 
     public void _testDatabaseCanOpenWritableWhileOpenReadable() throws Exception {
@@ -51,15 +56,12 @@ public class TestDatabase extends AndroidTestCase {
     }
 
     public void testDatabaseExists() throws Exception {
-        SQLiteDatabase db = helper.getReadableDatabase();
         assertNotNull(db);
 
         assertEquals(WeatherDbHelper.DATABASE_VERSION, db.getVersion());
     }
 
     public void testSqlErrorProducesException() throws Exception {
-        SQLiteDatabase db = helper.getReadableDatabase();
-
         try {
             Cursor c = db.rawQuery("hackafe is the best", null);
             fail("sql garbage does't produce exception!");
@@ -69,18 +71,34 @@ public class TestDatabase extends AndroidTestCase {
     }
 
     public void testTablesExists() throws Exception {
-        SQLiteDatabase db = helper.getReadableDatabase();
-
         Cursor c = db.rawQuery("select name from sqlite_master where type = 'table' ", null);
 
         boolean found = false;
         assertTrue(c.moveToFirst());
         do {
-            System.out.println("table = "+c.getString(0));
+            System.out.println("table = " + c.getString(0));
             if ("forecast".equals(c.getString(0)))
                 found = true;
         } while (c.moveToNext());
 
         assertTrue("table forecast was not found!", found);
+    }
+
+    public void testForecastHasAllColumn() throws Exception {
+        HashSet<String> expectedColumn = new HashSet<>();
+        expectedColumn.add("_id");
+        expectedColumn.add("forecast");
+        expectedColumn.add("date");
+
+        Cursor cursor = db.rawQuery("PRAGMA table_info(forecast)", null);
+        int name_idx = cursor.getColumnIndex("name");
+
+        assertTrue(cursor.moveToFirst());
+        do {
+            String columnName = cursor.getString(name_idx);
+            expectedColumn.remove(columnName);
+        } while (cursor.moveToNext());
+
+        assertEquals(0, expectedColumn.size());
     }
 }
