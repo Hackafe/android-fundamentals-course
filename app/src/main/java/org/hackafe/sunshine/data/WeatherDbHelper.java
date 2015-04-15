@@ -36,13 +36,14 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
 
     public void saveNewForecast(Forecast forecast) {
         SQLiteDatabase db = getWritableDatabase();
-        try {
+//        try {
             ContentValues values = new ContentValues();
             values.put("forecast", forecast.desc);
             values.put("date", forecast.timestamp);
             db.insert("forecast", null, values);
-        }finally {
-            db.close();
-        }
+//        }finally {
+//            db.close();
+//        }
+        // TODO find a way to work with multiple open databases from single thread!!!!!!!!!!!!!!
     }
 }
