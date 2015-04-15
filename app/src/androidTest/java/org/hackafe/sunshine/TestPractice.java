@@ -8,8 +8,8 @@ import android.test.AndroidTestCase;
 public class TestPractice extends AndroidTestCase {
 
     public void testStringEquals() throws Exception {
-        String a = "abcdef";
-        String b = "qwerty";
+        String a = "hackafe";
+        String b = "hackafe";
 
         assertEquals(a, b);
     }
