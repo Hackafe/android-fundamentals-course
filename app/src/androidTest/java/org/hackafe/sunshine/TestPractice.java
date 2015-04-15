@@ -22,4 +22,13 @@ public class TestPractice extends AndroidTestCase {
             fail("but they are equals :'(");
     }
 
+    public void testExceptions() throws Exception {
+        Object a = null;
+        try {
+            a.toString();
+            fail("where's my exception, uaaa");
+        } catch (NullPointerException e) {
+
+        }
+    }
 }
