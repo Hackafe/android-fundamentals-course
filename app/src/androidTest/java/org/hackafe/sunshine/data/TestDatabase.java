@@ -138,4 +138,9 @@ public class TestDatabase extends AndroidTestCase {
         // check date column == our date
         assertEquals(timestamp, cursor.getLong(1));
     }
+
+    // TODO validate only one record per day (try to insert 2 for a single day)
+    // TODO validate bad data
+    // TODO validate we have a unique id for the inserted record
+    
 }
