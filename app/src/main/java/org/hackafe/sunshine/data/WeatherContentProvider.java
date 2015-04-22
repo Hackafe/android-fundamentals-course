@@ -1,12 +1,23 @@
 package org.hackafe.sunshine.data;
 
+import  static org.hackafe.sunshine.data.WeatherContract.*;
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 public class WeatherContentProvider extends ContentProvider {
+
+    private static final int LOCATION_CODE = 1;
+    private static final int FORECAST_CODE = 2;
+    static UriMatcher matcher = new UriMatcher(0);
+    static {
+        matcher.addURI(AUTHORITY, "location", LOCATION_CODE);
+        matcher.addURI(AUTHORITY, "forecast", FORECAST_CODE);
+    }
+
     public WeatherContentProvider() {
     }
 
@@ -26,12 +37,24 @@ public class WeatherContentProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         WeatherDbHelper helper = new WeatherDbHelper(getContext());
-        helper.insertForecast(values);
-        return uri.buildUpon()
-                .appendQueryParameter(
-                        WeatherContract.Forecast.COLUMN_DATE,
-                        values.getAsString(WeatherContract.Forecast.COLUMN_DATE))
-                .build();
+        switch (matcher.match(uri)) {
+            case FORECAST_CODE:
+                helper.insertForecast(values);
+                return uri.buildUpon()
+                        .appendQueryParameter(
+                                WeatherContract.Forecast.COLUMN_DATE,
+                                values.getAsString(WeatherContract.Forecast.COLUMN_DATE))
+                        .build();
+            case LOCATION_CODE:
+                long id = helper.insertLocation(values);
+                return uri.buildUpon()
+                        .appendQueryParameter(
+                                Location._ID,
+                                Long.toString(id))
+                        .build();
+            default:
+                throw new UnsupportedOperationException("Not yet implemented");
+        }
     }
 
     @Override
