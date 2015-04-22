@@ -28,7 +28,13 @@ public interface WeatherContract {
 
         public static final String TABLE_NAME = "forecasts";
 
+        /**
+         * type string
+         */
         public static final String COLUMN_FORECAST = "weather";
+        /**
+         * type long
+         */
         public static final String COLUMN_DATE = "fordate";
 
         String[] PROJECTION = {
