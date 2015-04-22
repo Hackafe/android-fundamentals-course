@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.test.AndroidTestCase;
 
+import org.hackafe.sunshine.Forecast;
+import static org.hackafe.sunshine.data.WeatherContract.ForecastTable.*;
+
 import java.util.Date;
 
 /**
@@ -48,6 +51,26 @@ public class TestContentProvider extends AndroidTestCase {
         );
 
         assertEquals(1, cursor.getCount());
+    }
+
+    public void testQueryOneRecord() {
+        Forecast forecast = new Forecast(new Date().getTime(), "event shinier day");
+        new WeatherDbHelper(getContext()).saveNewForecast(forecast);
+
+        Cursor cursor = getContext().getContentResolver().query(
+                // Uri uri,
+                CONTENT_URI,
+                // String[] projection,
+                PROJECTION,
+                // String selection,
+                COLUMN_DATE + "=?",
+                // String[] selectionArgs,
+                new String[]{Long.toString(forecast.timestamp)},
+                // String sortOrder
+                null
+        );
+
+        assertEquals("records", 1, cursor.getCount());
     }
 
 }
