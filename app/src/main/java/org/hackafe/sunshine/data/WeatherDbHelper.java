@@ -48,9 +48,9 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
         insertForecast(values);
     }
 
-    public void insertForecast(ContentValues values) {
+    public long insertForecast(ContentValues values) {
         SQLiteDatabase db = getWritableDatabase();
-        db.insert(Forecast.TABLE_NAME, null, values);
+        return db.insert(Forecast.TABLE_NAME, null, values);
     }
 
     public long insertLocation(ContentValues values) {

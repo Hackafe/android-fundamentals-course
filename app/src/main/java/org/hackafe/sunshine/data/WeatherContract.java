@@ -36,6 +36,10 @@ public interface WeatherContract {
          * type long
          */
         public static final String COLUMN_DATE = "fordate";
+        /**
+         * type long, reference to locations._id
+         */
+        String COLUMN_LOCATION = "location_id";
 
         String[] PROJECTION = {
                 _ID, COLUMN_DATE, COLUMN_FORECAST

@@ -177,4 +177,17 @@ public class TestDatabase extends AndroidTestCase {
         assertEquals("id", id, cursor.getLong(Location.INDEX_ID));
         assertEquals("name", values.getAsString(Location.COLUMN_NAME), cursor.getString(Location.INDEX_NAME));
     }
+
+    public void testForecastHasLocation() {
+        ContentValues locationValues = new ContentValues();
+        locationValues.put(Location.COLUMN_NAME, "puldin");
+        long locationId = helper.insertLocation(locationValues);
+
+        ContentValues values = new ContentValues();
+        values.put(Forecast.COLUMN_LOCATION, locationId);
+        long forecastId = helper.insertForecast(values);
+
+        assertTrue("expected forecast != -1, got "+forecastId, forecastId!=-1);
+    }
 }
+
