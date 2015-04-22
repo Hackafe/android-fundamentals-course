@@ -25,6 +25,7 @@ public class TestDatabase extends AndroidTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        getContext().deleteDatabase(WeatherDbHelper.DATABASE_NAME);
         helper = new WeatherDbHelper(getContext());
         db = helper.getReadableDatabase();
     }
@@ -155,7 +156,7 @@ public class TestDatabase extends AndroidTestCase {
     public void testInsertLocation() {
         ContentValues values = new ContentValues();
         values.put(Location.COLUMN_NAME, "filibe");
-        helper.insertLocation(values);
+        long id = helper.insertLocation(values);
 
         Cursor cursor = db.query(
                 // table name
@@ -174,5 +175,7 @@ public class TestDatabase extends AndroidTestCase {
                 null
         );
         assertEquals(1, cursor.getCount());
+        assertTrue(cursor.moveToFirst());
+        assertEquals("id", id, cursor.getLong(Location.INDEX_ID));
     }
 }

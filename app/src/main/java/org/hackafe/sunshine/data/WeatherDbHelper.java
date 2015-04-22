@@ -14,7 +14,7 @@ import static org.hackafe.sunshine.data.WeatherContract.*;
  */
 public class WeatherDbHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "weather.db";
+    static final String DATABASE_NAME = "weather.db";
     static final int DATABASE_VERSION = 6;
 
     public WeatherDbHelper(Context context) {
@@ -55,8 +55,8 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
         db.insert(ForecastTable.TABLE_NAME, null, values);
     }
 
-    public void insertLocation(ContentValues values) {
+    public long insertLocation(ContentValues values) {
         SQLiteDatabase db = getWritableDatabase();
-        db.insert(Location.TABLE_NAME, null, values);
+        return db.insert(Location.TABLE_NAME, null, values);
     }
 }
