@@ -1,6 +1,7 @@
 package org.hackafe.sunshine.data;
 
 import static org.hackafe.sunshine.data.WeatherContract.*;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -88,9 +89,9 @@ public class TestDatabase extends AndroidTestCase {
 
         if (!tables.isEmpty()) {
             StringBuilder sb = new StringBuilder();
-            for (String table: tables)
+            for (String table : tables)
                 sb.append("missing table: " + table + "\n");
-            fail("not all tables found!\n"+sb.toString());
+            fail("not all tables found!\n" + sb.toString());
         }
     }
 
@@ -100,7 +101,7 @@ public class TestDatabase extends AndroidTestCase {
         expectedColumn.add(Forecast.COLUMN_DATE);
         expectedColumn.add(Forecast.COLUMN_FORECAST);
 
-        Cursor cursor = db.rawQuery("PRAGMA table_info("+ Forecast.TABLE_NAME+")", null);
+        Cursor cursor = db.rawQuery("PRAGMA table_info(" + Forecast.TABLE_NAME + ")", null);
         int name_idx = cursor.getColumnIndex("name");
 
         assertTrue(cursor.moveToFirst());
@@ -117,7 +118,7 @@ public class TestDatabase extends AndroidTestCase {
         String forecastStr = "sunny all day long with chance for pizza";
         org.hackafe.sunshine.Forecast forecast = new org.hackafe.sunshine.Forecast(timestamp,
                 forecastStr);
-        helper.insertForecast(forecast);
+        helper.insertForecast(0, forecast);
 
         Cursor cursor = db.query(
                 // table name
@@ -125,7 +126,7 @@ public class TestDatabase extends AndroidTestCase {
                 // select field
                 Forecast.PROJECTION,
                 // where clause
-                Forecast.COLUMN_DATE+" = ?",
+                Forecast.COLUMN_DATE + " = ?",
                 // where argument
                 new String[]{Long.toString(timestamp)},
                 // group by
@@ -134,7 +135,7 @@ public class TestDatabase extends AndroidTestCase {
                 null,
                 // order by
                 null
-                );
+        );
 
         // check for single record
         assertEquals(1, cursor.getCount());
@@ -185,9 +186,11 @@ public class TestDatabase extends AndroidTestCase {
 
         ContentValues values = new ContentValues();
         values.put(Forecast.COLUMN_LOCATION, locationId);
+        values.put(Forecast.COLUMN_DATE, 0);
+        values.put(Forecast.COLUMN_FORECAST, "");
         long forecastId = helper.insertForecast(values);
 
-        assertTrue("expected forecast != -1, got "+forecastId, forecastId!=-1);
+        assertTrue("expected forecast != -1, got " + forecastId, forecastId != -1);
     }
 }
 
