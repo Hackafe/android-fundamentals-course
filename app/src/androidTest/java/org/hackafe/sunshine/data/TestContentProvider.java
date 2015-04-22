@@ -71,6 +71,9 @@ public class TestContentProvider extends AndroidTestCase {
         );
 
         assertEquals("records", 1, cursor.getCount());
+        assertTrue("moveToFirst", cursor.moveToFirst());
+        assertEquals("desc", forecast.desc, cursor.getString(INDEX_FORECAST));
+        assertEquals("timestamp", forecast.timestamp, cursor.getLong(INDEX_DATE));
     }
 
 }

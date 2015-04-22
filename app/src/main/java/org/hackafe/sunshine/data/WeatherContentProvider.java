@@ -49,7 +49,7 @@ public class WeatherContentProvider extends ContentProvider {
                 // String table,
                 WeatherContract.ForecastTable.TABLE_NAME,
                 // String[] columns,
-                null,
+                projection,
                 // String selection,
                 selection,
                 // String[] selectionArgs,
