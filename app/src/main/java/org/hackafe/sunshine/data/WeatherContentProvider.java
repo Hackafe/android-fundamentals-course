@@ -26,7 +26,7 @@ public class WeatherContentProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         WeatherDbHelper helper = new WeatherDbHelper(getContext());
-        helper.saveNewForecast(values);
+        helper.insertForecast(values);
         return uri.buildUpon()
                 .appendQueryParameter(
                         WeatherContract.Forecast.COLUMN_DATE,

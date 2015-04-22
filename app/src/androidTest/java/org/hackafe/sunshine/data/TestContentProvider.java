@@ -54,7 +54,7 @@ public class TestContentProvider extends AndroidTestCase {
 
     public void testQueryOneRecord() {
         org.hackafe.sunshine.Forecast forecast = new org.hackafe.sunshine.Forecast(new Date().getTime(), "event shinier day");
-        new WeatherDbHelper(getContext()).saveNewForecast(forecast);
+        new WeatherDbHelper(getContext()).insertForecast(forecast);
 
         Cursor cursor = getContext().getContentResolver().query(
                 // Uri uri,

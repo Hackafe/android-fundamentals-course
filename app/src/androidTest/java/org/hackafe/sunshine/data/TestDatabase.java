@@ -117,7 +117,7 @@ public class TestDatabase extends AndroidTestCase {
         String forecastStr = "sunny all day long with chance for pizza";
         org.hackafe.sunshine.Forecast forecast = new org.hackafe.sunshine.Forecast(timestamp,
                 forecastStr);
-        helper.saveNewForecast(forecast);
+        helper.insertForecast(forecast);
 
         Cursor cursor = db.query(
                 // table name
