@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import org.hackafe.sunshine.Forecast;
 
+import static org.hackafe.sunshine.data.WeatherContract.*;
+
 /**
  * Created by groupsky on 15.04.15.
  */
@@ -50,10 +52,11 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
 
     public void saveNewForecast(ContentValues values) {
         SQLiteDatabase db = getWritableDatabase();
-        db.insert(WeatherContract.ForecastTable.TABLE_NAME, null, values);
+        db.insert(ForecastTable.TABLE_NAME, null, values);
     }
 
     public void insertLocation(ContentValues values) {
-
+        SQLiteDatabase db = getWritableDatabase();
+        db.insert(Location.TABLE_NAME, null, values);
     }
 }
