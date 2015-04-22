@@ -92,7 +92,7 @@ public class TestDatabase extends AndroidTestCase {
         if (!tables.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (String table: tables)
-                sb.append("missing table: "+table+"\n");
+                sb.append("missing table: " + table + "\n");
             fail("not all tables found!\n"+sb.toString());
         }
     }
@@ -156,7 +156,8 @@ public class TestDatabase extends AndroidTestCase {
     public void testInsertLocation() {
         ContentValues values = new ContentValues();
         values.put(Location.COLUMN_NAME, "filibe");
-        long id = helper.insertLocation(values);
+        long id = helper.insertLocation(new ContentValues(values));
+        assertEquals("id", 1, id);
 
         Cursor cursor = db.query(
                 // table name
@@ -164,9 +165,9 @@ public class TestDatabase extends AndroidTestCase {
                 // select field
                 Location.PROJECTION,
                 // where clause
-                Location.COLUMN_NAME + " = ?",
+                null,
                 // where argument
-                new String[]{values.getAsString(Location.COLUMN_NAME)},
+                null,
                 // group by
                 null,
                 // having
@@ -177,5 +178,6 @@ public class TestDatabase extends AndroidTestCase {
         assertEquals(1, cursor.getCount());
         assertTrue(cursor.moveToFirst());
         assertEquals("id", id, cursor.getLong(Location.INDEX_ID));
+        assertEquals("name", values.getAsString(Location.COLUMN_NAME), cursor.getString(Location.INDEX_NAME));
     }
 }

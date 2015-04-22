@@ -52,5 +52,6 @@ public interface WeatherContract {
         String COLUMN_NAME = "name";
         String[] PROJECTION = {_ID, COLUMN_NAME};
         int INDEX_ID = 0;
+        int INDEX_NAME = 1;
     }
 }
