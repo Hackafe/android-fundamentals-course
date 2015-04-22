@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.test.AndroidTestCase;
 
-import static org.hackafe.sunshine.data.WeatherContract.Forecast.*;
+import static org.hackafe.sunshine.data.WeatherContract.*;
 
 import java.util.Date;
 
@@ -23,23 +23,24 @@ public class TestContentProvider extends AndroidTestCase {
 
     public void testInsertData() {
         ContentValues values = new ContentValues();
-        values.put(WeatherContract.Forecast.COLUMN_DATE, new Date().getTime());
-        values.put(WeatherContract.Forecast.COLUMN_FORECAST, "some forecast for sunny days");
+        values.put(Forecast.COLUMN_DATE, new Date().getTime());
+        values.put(Forecast.COLUMN_FORECAST, "some forecast for sunny days");
+        values.put(Forecast.COLUMN_LOCATION, 1);
         Uri row = getContext().getContentResolver().insert(
-                WeatherContract.Forecast.CONTENT_URI,
+                Forecast.CONTENT_URI,
                 values
         );
         assertNotNull(row);
 
         Cursor cursor = new WeatherDbHelper(getContext()).getReadableDatabase().query(
                 //String table,
-                WeatherContract.Forecast.TABLE_NAME,
+                Forecast.TABLE_NAME,
                 // String[] columns,
                 null,
                 // String selection,
-                WeatherContract.Forecast.COLUMN_DATE + "=?",
+                Forecast.COLUMN_DATE + "=?",
                 // String[] selectionArgs,
-                new String[]{values.getAsString(WeatherContract.Forecast.COLUMN_DATE)},
+                new String[]{values.getAsString(Forecast.COLUMN_DATE)},
                 // String groupBy,
                 null,
                 // String having,
@@ -58,11 +59,11 @@ public class TestContentProvider extends AndroidTestCase {
 
         Cursor cursor = getContext().getContentResolver().query(
                 // Uri uri,
-                CONTENT_URI,
+                Forecast.CONTENT_URI,
                 // String[] projection,
-                PROJECTION,
+                Forecast.PROJECTION,
                 // String selection,
-                COLUMN_DATE + "=?",
+                Forecast.COLUMN_DATE + "=?",
                 // String[] selectionArgs,
                 new String[]{Long.toString(forecast.timestamp)},
                 // String sortOrder
@@ -71,8 +72,7 @@ public class TestContentProvider extends AndroidTestCase {
 
         assertEquals("records", 1, cursor.getCount());
         assertTrue("moveToFirst", cursor.moveToFirst());
-        assertEquals("desc", forecast.desc, cursor.getString(INDEX_FORECAST));
-        assertEquals("timestamp", forecast.timestamp, cursor.getLong(INDEX_DATE));
+        assertEquals("desc", forecast.desc, cursor.getString(Forecast.INDEX_FORECAST));
+        assertEquals("timestamp", forecast.timestamp, cursor.getLong(Forecast.INDEX_DATE));
     }
-
 }
