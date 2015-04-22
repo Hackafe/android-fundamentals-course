@@ -3,6 +3,7 @@ package org.hackafe.sunshine.data;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.test.AndroidTestCase;
 
@@ -74,5 +75,37 @@ public class TestContentProvider extends AndroidTestCase {
         assertTrue("moveToFirst", cursor.moveToFirst());
         assertEquals("desc", forecast.desc, cursor.getString(Forecast.INDEX_FORECAST));
         assertEquals("timestamp", forecast.timestamp, cursor.getLong(Forecast.INDEX_DATE));
+    }
+
+    public void testInsertLocation() {
+        ContentValues values = new ContentValues();
+        values.put(Location.COLUMN_NAME, "pulpodeva");
+        Uri uri = getContext().getContentResolver().insert(
+                Location.CONTENT_URI,
+                values
+        );
+
+        WeatherDbHelper helper = new WeatherDbHelper(getContext());
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor cursor = db.query(
+                // table name
+                Location.TABLE_NAME,
+                // select field
+                Location.PROJECTION,
+                // where clause
+                null,
+                // where argument
+                null,
+                // group by
+                null,
+                // having
+                null,
+                // order by
+                null
+        );
+        assertEquals(1, cursor.getCount());
+        assertTrue(cursor.moveToFirst());
+        assertEquals("name", values.getAsString(Location.COLUMN_NAME), cursor.getString(Location.INDEX_NAME));
+
     }
 }

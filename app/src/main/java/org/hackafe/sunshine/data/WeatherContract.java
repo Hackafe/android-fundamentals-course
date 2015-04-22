@@ -52,8 +52,11 @@ public interface WeatherContract {
 
     public interface Location extends BaseColumns {
 
+        Uri CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, "location");
+
         String TABLE_NAME = "locations";
         String COLUMN_NAME = "name";
+
         String[] PROJECTION = {_ID, COLUMN_NAME};
         int INDEX_ID = 0;
         int INDEX_NAME = 1;
