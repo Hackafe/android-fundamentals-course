@@ -45,4 +45,8 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         db.insert(WeatherContract.ForecastTable.TABLE_NAME, null, values);
     }
+
+    public void insertLocation(ContentValues values) {
+
+    }
 }

@@ -46,4 +46,10 @@ public interface WeatherContract {
         public static final int INDEX_FORECAST = 2;
     }
 
+    public interface Location extends BaseColumns {
+
+        String TABLE_NAME = "locations";
+        String COLUMN_NAME = "name";
+        String[] PROJECTION = {_ID, COLUMN_NAME};
+    }
 }

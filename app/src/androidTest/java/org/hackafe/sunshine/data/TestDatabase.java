@@ -1,5 +1,7 @@
 package org.hackafe.sunshine.data;
 
+import static org.hackafe.sunshine.data.WeatherContract.*;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -74,17 +76,24 @@ public class TestDatabase extends AndroidTestCase {
     }
 
     public void testTablesExists() throws Exception {
+        HashSet<String> tables = new HashSet<>();
+        tables.add(Location.TABLE_NAME);
+        tables.add(ForecastTable.TABLE_NAME);
+
         Cursor c = db.rawQuery("select name from sqlite_master where type = 'table' ", null);
 
-        boolean found = false;
         assertTrue(c.moveToFirst());
         do {
             System.out.println("table = " + c.getString(0));
-            if (WeatherContract.ForecastTable.TABLE_NAME.equals(c.getString(0)))
-                found = true;
+            tables.remove(c.getString(0));
         } while (c.moveToNext());
 
-        assertTrue("table forecast was not found!", found);
+        if (!tables.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (String table: tables)
+                sb.append("missing table: "+table+"\n");
+            fail("not all tables found!\n"+sb.toString());
+        }
     }
 
     public void testForecastHasAllColumn() throws Exception {
@@ -143,4 +152,27 @@ public class TestDatabase extends AndroidTestCase {
     // TODO validate bad data
     // TODO validate we have a unique id for the inserted record
 
+    public void testInsertLocation() {
+        ContentValues values = new ContentValues();
+        values.put(Location.COLUMN_NAME, "filibe");
+        helper.insertLocation(values);
+
+        Cursor cursor = db.query(
+                // table name
+                Location.TABLE_NAME,
+                // select field
+                Location.PROJECTION,
+                // where clause
+                Location.COLUMN_NAME + " = ?",
+                // where argument
+                new String[]{values.getAsString(Location.COLUMN_NAME)},
+                // group by
+                null,
+                // having
+                null,
+                // order by
+                null
+        );
+        assertEquals(1, cursor.getCount());
+    }
 }
