@@ -6,9 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.test.AndroidTestCase;
-import android.util.Log;
-
-import org.hackafe.sunshine.Forecast;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -79,7 +76,7 @@ public class TestDatabase extends AndroidTestCase {
     public void testTablesExists() throws Exception {
         HashSet<String> tables = new HashSet<>();
         tables.add(Location.TABLE_NAME);
-        tables.add(ForecastTable.TABLE_NAME);
+        tables.add(Forecast.TABLE_NAME);
 
         Cursor c = db.rawQuery("select name from sqlite_master where type = 'table' ", null);
 
@@ -99,11 +96,11 @@ public class TestDatabase extends AndroidTestCase {
 
     public void testForecastHasAllColumn() throws Exception {
         HashSet<String> expectedColumn = new HashSet<>();
-        expectedColumn.add(WeatherContract.ForecastTable._ID);
-        expectedColumn.add(WeatherContract.ForecastTable.COLUMN_DATE);
-        expectedColumn.add(WeatherContract.ForecastTable.COLUMN_FORECAST);
+        expectedColumn.add(Forecast._ID);
+        expectedColumn.add(Forecast.COLUMN_DATE);
+        expectedColumn.add(Forecast.COLUMN_FORECAST);
 
-        Cursor cursor = db.rawQuery("PRAGMA table_info("+WeatherContract.ForecastTable.TABLE_NAME+")", null);
+        Cursor cursor = db.rawQuery("PRAGMA table_info("+ Forecast.TABLE_NAME+")", null);
         int name_idx = cursor.getColumnIndex("name");
 
         assertTrue(cursor.moveToFirst());
@@ -118,17 +115,17 @@ public class TestDatabase extends AndroidTestCase {
     public void testSaveNewForecast() throws Exception {
         long timestamp = new Date().getTime();
         String forecastStr = "sunny all day long with chance for pizza";
-        Forecast forecast = new Forecast(timestamp,
+        org.hackafe.sunshine.Forecast forecast = new org.hackafe.sunshine.Forecast(timestamp,
                 forecastStr);
         helper.saveNewForecast(forecast);
 
         Cursor cursor = db.query(
                 // table name
-                WeatherContract.ForecastTable.TABLE_NAME,
+                Forecast.TABLE_NAME,
                 // select field
-                WeatherContract.ForecastTable.PROJECTION,
+                Forecast.PROJECTION,
                 // where clause
-                WeatherContract.ForecastTable.COLUMN_DATE+" = ?",
+                Forecast.COLUMN_DATE+" = ?",
                 // where argument
                 new String[]{Long.toString(timestamp)},
                 // group by
@@ -144,9 +141,9 @@ public class TestDatabase extends AndroidTestCase {
         // check we can move to the first record
         assertTrue(cursor.moveToFirst());
         // check forecast column == our forecast string
-        assertEquals(forecastStr, cursor.getString(WeatherContract.ForecastTable.INDEX_FORECAST));
+        assertEquals(forecastStr, cursor.getString(Forecast.INDEX_FORECAST));
         // check date column == our date
-        assertEquals(timestamp, cursor.getLong(WeatherContract.ForecastTable.INDEX_DATE));
+        assertEquals(timestamp, cursor.getLong(Forecast.INDEX_DATE));
     }
 
     // TODO validate only one record per day (try to insert 2 for a single day)

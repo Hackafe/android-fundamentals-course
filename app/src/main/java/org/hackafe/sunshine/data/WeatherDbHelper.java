@@ -5,8 +5,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import org.hackafe.sunshine.Forecast;
-
 import static org.hackafe.sunshine.data.WeatherContract.*;
 
 /**
@@ -43,16 +41,16 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void saveNewForecast(Forecast forecast) {
+    public void saveNewForecast(org.hackafe.sunshine.Forecast forecast) {
         ContentValues values = new ContentValues();
-        values.put(WeatherContract.ForecastTable.COLUMN_FORECAST, forecast.desc);
-        values.put(WeatherContract.ForecastTable.COLUMN_DATE, forecast.timestamp);
+        values.put(Forecast.COLUMN_FORECAST, forecast.desc);
+        values.put(Forecast.COLUMN_DATE, forecast.timestamp);
         saveNewForecast(values);
     }
 
     public void saveNewForecast(ContentValues values) {
         SQLiteDatabase db = getWritableDatabase();
-        db.insert(ForecastTable.TABLE_NAME, null, values);
+        db.insert(Forecast.TABLE_NAME, null, values);
     }
 
     public long insertLocation(ContentValues values) {

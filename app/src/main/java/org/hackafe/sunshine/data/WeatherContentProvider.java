@@ -29,8 +29,8 @@ public class WeatherContentProvider extends ContentProvider {
         helper.saveNewForecast(values);
         return uri.buildUpon()
                 .appendQueryParameter(
-                        WeatherContract.ForecastTable.COLUMN_DATE,
-                        values.getAsString(WeatherContract.ForecastTable.COLUMN_DATE))
+                        WeatherContract.Forecast.COLUMN_DATE,
+                        values.getAsString(WeatherContract.Forecast.COLUMN_DATE))
                 .build();
     }
 
@@ -47,7 +47,7 @@ public class WeatherContentProvider extends ContentProvider {
         SQLiteDatabase db = helper.getReadableDatabase();
         return db.query(
                 // String table,
-                WeatherContract.ForecastTable.TABLE_NAME,
+                WeatherContract.Forecast.TABLE_NAME,
                 // String[] columns,
                 projection,
                 // String selection,

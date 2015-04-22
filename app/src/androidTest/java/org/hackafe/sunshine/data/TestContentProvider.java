@@ -6,8 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.test.AndroidTestCase;
 
-import org.hackafe.sunshine.Forecast;
-import static org.hackafe.sunshine.data.WeatherContract.ForecastTable.*;
+import static org.hackafe.sunshine.data.WeatherContract.Forecast.*;
 
 import java.util.Date;
 
@@ -17,30 +16,30 @@ import java.util.Date;
 public class TestContentProvider extends AndroidTestCase {
 
     public void testWeHaveAProvider() {
-        ContentProviderClient client = getContext().getContentResolver().acquireContentProviderClient(WeatherContract.ForecastTable.CONTENT_URI);
+        ContentProviderClient client = getContext().getContentResolver().acquireContentProviderClient(WeatherContract.Forecast.CONTENT_URI);
         assertNotNull("Can't find content provider", client);
         client.release();
     }
 
     public void testInsertData() {
         ContentValues values = new ContentValues();
-        values.put(WeatherContract.ForecastTable.COLUMN_DATE, new Date().getTime());
-        values.put(WeatherContract.ForecastTable.COLUMN_FORECAST, "some forecast for sunny days");
+        values.put(WeatherContract.Forecast.COLUMN_DATE, new Date().getTime());
+        values.put(WeatherContract.Forecast.COLUMN_FORECAST, "some forecast for sunny days");
         Uri row = getContext().getContentResolver().insert(
-                WeatherContract.ForecastTable.CONTENT_URI,
+                WeatherContract.Forecast.CONTENT_URI,
                 values
         );
         assertNotNull(row);
 
         Cursor cursor = new WeatherDbHelper(getContext()).getReadableDatabase().query(
                 //String table,
-                WeatherContract.ForecastTable.TABLE_NAME,
+                WeatherContract.Forecast.TABLE_NAME,
                 // String[] columns,
                 null,
                 // String selection,
-                WeatherContract.ForecastTable.COLUMN_DATE + "=?",
+                WeatherContract.Forecast.COLUMN_DATE + "=?",
                 // String[] selectionArgs,
-                new String[]{values.getAsString(WeatherContract.ForecastTable.COLUMN_DATE)},
+                new String[]{values.getAsString(WeatherContract.Forecast.COLUMN_DATE)},
                 // String groupBy,
                 null,
                 // String having,
@@ -54,7 +53,7 @@ public class TestContentProvider extends AndroidTestCase {
     }
 
     public void testQueryOneRecord() {
-        Forecast forecast = new Forecast(new Date().getTime(), "event shinier day");
+        org.hackafe.sunshine.Forecast forecast = new org.hackafe.sunshine.Forecast(new Date().getTime(), "event shinier day");
         new WeatherDbHelper(getContext()).saveNewForecast(forecast);
 
         Cursor cursor = getContext().getContentResolver().query(

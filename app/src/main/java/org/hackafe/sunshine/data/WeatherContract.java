@@ -17,7 +17,7 @@ public interface WeatherContract {
      */
     public static final Uri AUTHORITY_URI = Uri.parse("content://" + AUTHORITY);
 
-    public static interface ForecastTable extends BaseColumns {
+    public static interface Forecast extends BaseColumns {
 
         /**
          * The content:// style URI for this table.  Requests to this URI can be
