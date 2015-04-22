@@ -3,6 +3,7 @@ package org.hackafe.sunshine.data;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 public class WeatherContentProvider extends ContentProvider {
@@ -42,8 +43,23 @@ public class WeatherContentProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
-        // TODO: Implement this to handle query requests from clients.
-        throw new UnsupportedOperationException("Not yet implemented");
+        WeatherDbHelper helper = new WeatherDbHelper(getContext());
+        SQLiteDatabase db = helper.getReadableDatabase();
+        return db.query(
+                // String table,
+                WeatherContract.ForecastTable.TABLE_NAME,
+                // String[] columns,
+                null,
+                // String selection,
+                selection,
+                // String[] selectionArgs,
+                selectionArgs,
+                // String groupBy,
+                null,
+                // String having,
+                null,
+                // String orderBy
+                null);
     }
 
     @Override
