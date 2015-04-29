@@ -16,6 +16,12 @@ import java.util.Date;
  */
 public class TestContentProvider extends AndroidTestCase {
 
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        getContext().deleteDatabase(WeatherDbHelper.DATABASE_NAME);
+    }
+
     public void testWeHaveAProvider() {
         ContentProviderClient client = getContext().getContentResolver().acquireContentProviderClient(WeatherContract.Forecast.CONTENT_URI);
         assertNotNull("Can't find content provider", client);
@@ -107,5 +113,35 @@ public class TestContentProvider extends AndroidTestCase {
         assertTrue(cursor.moveToFirst());
         assertEquals("name", values.getAsString(Location.COLUMN_NAME), cursor.getString(Location.INDEX_NAME));
 
+    }
+
+    public void testSortOrderOnQuery() {
+        org.hackafe.sunshine.Forecast forecast = new org.hackafe.sunshine.Forecast(1, "event shinier day");
+        new WeatherDbHelper(getContext()).insertForecast(1, forecast);
+        forecast = new org.hackafe.sunshine.Forecast(2, "not so shiny day");
+        new WeatherDbHelper(getContext()).insertForecast(1, forecast);
+        forecast = new org.hackafe.sunshine.Forecast(0, "not so shiny day");
+        new WeatherDbHelper(getContext()).insertForecast(1, forecast);
+
+        Cursor cursor = getContext().getContentResolver().query(
+                // Uri uri,
+                Forecast.CONTENT_URI,
+                // String[] projection,
+                Forecast.PROJECTION,
+                // String selection,
+                null,
+                // String[] selectionArgs,
+                null,
+                // String sortOrder
+                Forecast.COLUMN_DATE
+        );
+
+        assertEquals("records", 3, cursor.getCount());
+        assertTrue("moveToFirst", cursor.moveToFirst());
+        assertEquals("timestamp", 0, cursor.getLong(Forecast.INDEX_DATE));
+        assertTrue("moveToNext", cursor.moveToNext());
+        assertEquals("timestamp", 1, cursor.getLong(Forecast.INDEX_DATE));
+        assertTrue("moveToNext", cursor.moveToNext());
+        assertEquals("timestamp", 2, cursor.getLong(Forecast.INDEX_DATE));
     }
 }

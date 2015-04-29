@@ -85,7 +85,7 @@ public class WeatherContentProvider extends ContentProvider {
                 // String having,
                 null,
                 // String orderBy
-                null);
+                sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), Forecast.CONTENT_URI);
         return cursor;
     }
