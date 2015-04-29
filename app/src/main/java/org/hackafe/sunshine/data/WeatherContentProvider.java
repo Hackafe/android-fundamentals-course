@@ -40,6 +40,9 @@ public class WeatherContentProvider extends ContentProvider {
         switch (matcher.match(uri)) {
             case FORECAST_CODE:
                 helper.insertForecast(values);
+                getContext().getContentResolver().notifyChange(
+                        Forecast.CONTENT_URI, null
+                );
                 return uri.buildUpon()
                         .appendQueryParameter(
                                 WeatherContract.Forecast.COLUMN_DATE,
@@ -68,7 +71,7 @@ public class WeatherContentProvider extends ContentProvider {
                         String[] selectionArgs, String sortOrder) {
         WeatherDbHelper helper = new WeatherDbHelper(getContext());
         SQLiteDatabase db = helper.getReadableDatabase();
-        return db.query(
+        Cursor cursor = db.query(
                 // String table,
                 WeatherContract.Forecast.TABLE_NAME,
                 // String[] columns,
@@ -83,6 +86,8 @@ public class WeatherContentProvider extends ContentProvider {
                 null,
                 // String orderBy
                 null);
+        cursor.setNotificationUri(getContext().getContentResolver(), Forecast.CONTENT_URI);
+        return cursor;
     }
 
     @Override
