@@ -13,7 +13,7 @@ import static org.hackafe.sunshine.data.WeatherContract.*;
 public class WeatherDbHelper extends SQLiteOpenHelper {
 
     static final String DATABASE_NAME = "weather.db";
-    static final int DATABASE_VERSION = 8;
+    static final int DATABASE_VERSION = 9;
 
     public WeatherDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -28,7 +28,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
                 "location_id INTEGER NOT NULL," +
                 "weather TEXT NOT NULL," +
                 "fordate INTEGER NOT NULL," +
-                "UNIQUE(fordate)" +
+                "UNIQUE(fordate, location_id)" +
                 ");\n");
 
         db.execSQL("DROP TABLE IF EXISTS locations;");
