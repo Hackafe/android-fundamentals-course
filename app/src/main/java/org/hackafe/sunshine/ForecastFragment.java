@@ -1,5 +1,7 @@
 package org.hackafe.sunshine;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -18,6 +20,8 @@ import android.widget.SimpleCursorAdapter;
 
 import org.hackafe.sunshine.data.WeatherContract;
 
+import static org.hackafe.sunshine.data.WeatherContract.*;
+
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -25,8 +29,28 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private static final String TAG = "ForecastFragment";
     SharedPreferences mSharedPreferences;
     private SimpleCursorAdapter adapter;
+    private long locationId;
 
     public ForecastFragment() {
+    }
+
+    private long getLocationId(String location) {
+        ContentResolver contentResolver = getActivity().getContentResolver();
+        Cursor cursor = contentResolver.query(
+                Location.CONTENT_URI,
+                new String[]{Location._ID},
+                Location.COLUMN_NAME + "=?",
+                new String[]{location},
+                null
+        );
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            return cursor.getLong(0);
+        }
+        ContentValues values = new ContentValues();
+        values.put(Location.COLUMN_NAME, location);
+        contentResolver.insert(Location.CONTENT_URI, values);
+        return getLocationId(location);
     }
 
     @Override
@@ -37,8 +61,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
+        String location = mSharedPreferences.getString("pref_location", "Plovdiv");
+        locationId = getLocationId(location);
+
         new WeatherFetcher(getActivity().getContentResolver()).execute(
-                mSharedPreferences.getString("pref_location", "Plovdiv"),
+                Long.toString(locationId),
+                location,
                 mSharedPreferences.getString("pref_units", "Metric")
         );
 
@@ -78,15 +106,15 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 // Context context,
                 getActivity(),
                 // Uri uri,
-                WeatherContract.Forecast.CONTENT_URI,
+                Forecast.CONTENT_URI,
                 // String[] projection,
-                WeatherContract.Forecast.PROJECTION,
+                Forecast.PROJECTION,
                 // String selection,
-                null,
+                Forecast.COLUMN_LOCATION+"=?",
                 // String[] selectionArgs,
-                null,
+                new String[]{ Long.toString(locationId) },
                 // String sortOrder
-                WeatherContract.Forecast.COLUMN_DATE
+                Forecast.COLUMN_DATE
         );
     }
 

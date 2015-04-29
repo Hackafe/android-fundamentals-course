@@ -2,12 +2,14 @@ package org.hackafe.sunshine;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
 
 import org.hackafe.sunshine.data.WeatherContract;
+import static org.hackafe.sunshine.data.WeatherContract.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -90,9 +92,9 @@ public class WeatherFetcher extends AsyncTask<String, Void, Void> {
                     degrees = "F";
 
                 ContentValues forecast = new ContentValues();
-                forecast.put(WeatherContract.Forecast.COLUMN_FORECAST, String.format("%s - %s   %.1f°%s", dateStr, description, dayTemp, degrees));
-                forecast.put(WeatherContract.Forecast.COLUMN_DATE, dt);
-                forecast.put(WeatherContract.Forecast.COLUMN_LOCATION, locationId);
+                forecast.put(Forecast.COLUMN_FORECAST, String.format("%s - %s   %.1f°%s", dateStr, description, dayTemp, degrees));
+                forecast.put(Forecast.COLUMN_DATE, dt);
+                forecast.put(Forecast.COLUMN_LOCATION, locationId);
                 insertForecast(forecast);
                 Log.d("Sunshine", "forecast = " + forecast);
             }
@@ -103,7 +105,7 @@ public class WeatherFetcher extends AsyncTask<String, Void, Void> {
 
     private void insertForecast(ContentValues forecast) {
         Uri row = contentResolver.insert(
-                WeatherContract.Forecast.CONTENT_URI,
+                Forecast.CONTENT_URI,
                 forecast
         );
         try {
@@ -115,10 +117,9 @@ public class WeatherFetcher extends AsyncTask<String, Void, Void> {
 
     @Override
     protected Void doInBackground(String... params) {
-        String location = params[0];
-        String units = params[1];
-
-        long locationId = getLocationId(location);
+        long locationId = Long.parseLong(params[0]);
+        String location = params[1];
+        String units = params[2];
 
         String data = getForecast(location, units);
         parseForecast(data, locationId, units);
@@ -126,7 +127,4 @@ public class WeatherFetcher extends AsyncTask<String, Void, Void> {
         return null;
     }
 
-    private long getLocationId(String location) {
-        return 1;
-    }
 }

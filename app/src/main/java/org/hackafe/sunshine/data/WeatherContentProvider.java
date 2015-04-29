@@ -1,6 +1,7 @@
 package org.hackafe.sunshine.data;
 
-import  static org.hackafe.sunshine.data.WeatherContract.*;
+import static org.hackafe.sunshine.data.WeatherContract.*;
+
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
@@ -13,6 +14,7 @@ public class WeatherContentProvider extends ContentProvider {
     private static final int LOCATION_CODE = 1;
     private static final int FORECAST_CODE = 2;
     static UriMatcher matcher = new UriMatcher(0);
+
     static {
         matcher.addURI(AUTHORITY, "location", LOCATION_CODE);
         matcher.addURI(AUTHORITY, "forecast", FORECAST_CODE);
@@ -71,9 +73,24 @@ public class WeatherContentProvider extends ContentProvider {
                         String[] selectionArgs, String sortOrder) {
         WeatherDbHelper helper = new WeatherDbHelper(getContext());
         SQLiteDatabase db = helper.getReadableDatabase();
+        String tableName;
+        Uri notificationUri;
+        switch (matcher.match(uri)) {
+            case FORECAST_CODE:
+                tableName = Forecast.TABLE_NAME;
+                notificationUri = Forecast.CONTENT_URI;
+                break;
+            case LOCATION_CODE:
+                tableName = Location.TABLE_NAME;
+                notificationUri = Location.CONTENT_URI;
+                break;
+            default:
+                throw new UnsupportedOperationException("Not yet implemented");
+        }
+
         Cursor cursor = db.query(
                 // String table,
-                WeatherContract.Forecast.TABLE_NAME,
+                tableName,
                 // String[] columns,
                 projection,
                 // String selection,
@@ -86,7 +103,7 @@ public class WeatherContentProvider extends ContentProvider {
                 null,
                 // String orderBy
                 sortOrder);
-        cursor.setNotificationUri(getContext().getContentResolver(), Forecast.CONTENT_URI);
+        cursor.setNotificationUri(getContext().getContentResolver(), notificationUri);
         return cursor;
     }
 
