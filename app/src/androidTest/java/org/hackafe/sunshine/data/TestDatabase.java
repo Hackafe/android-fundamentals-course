@@ -116,9 +116,11 @@ public class TestDatabase extends AndroidTestCase {
     public void testSaveNewForecast() throws Exception {
         long timestamp = new Date().getTime();
         String forecastStr = "sunny all day long with chance for pizza";
-        org.hackafe.sunshine.Forecast forecast = new org.hackafe.sunshine.Forecast(timestamp,
-                forecastStr);
-        helper.insertForecast(0, forecast);
+        ContentValues forecast = new ContentValues();
+        forecast.put(Forecast.COLUMN_DATE, timestamp);
+        forecast.put(Forecast.COLUMN_FORECAST, forecastStr);
+        forecast.put(Forecast.COLUMN_LOCATION, 0);
+        helper.insertForecast(forecast);
 
         Cursor cursor = db.query(
                 // table name
