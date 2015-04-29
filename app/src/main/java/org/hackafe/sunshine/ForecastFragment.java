@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
@@ -46,7 +47,6 @@ import static org.hackafe.sunshine.data.WeatherContract.*;
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = "ForecastFragment";
     SharedPreferences mSharedPreferences;
-    String prefUnits;
     private SimpleCursorAdapter adapter;
 
     public ForecastFragment() {
@@ -59,27 +59,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        prefUnits = mSharedPreferences.getString("pref_units", "Metric");
-
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy
-                .Builder()
-                .permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        String data = getForecast();
-        List<Forecast> forecasts = parseForecast(data);
-
-        for (Forecast forecast : forecasts) {
-            ContentValues values = new ContentValues();
-            values.put(WeatherContract.Forecast.COLUMN_DATE, forecast.timestamp);
-            values.put(WeatherContract.Forecast.COLUMN_FORECAST, forecast.desc);
-            values.put(WeatherContract.Forecast.COLUMN_LOCATION, 1);
-            Uri row = getActivity().getContentResolver().insert(
-                    WeatherContract.Forecast.CONTENT_URI,
-                    values
-            );
-            Log.d(TAG, "added weather with uri: " + row);
-        }
-
+        new WeatherFetcher().execute(
+                mSharedPreferences.getString("pref_location", "Plovdiv"),
+                mSharedPreferences.getString("pref_units", "Metric")
+        );
 
         adapter = new SimpleCursorAdapter(getActivity(),
                 R.layout.list_item_forecast,
@@ -163,30 +146,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         }
     }
 
-    private String getForecast() {
-        try {
-            URL url = new URL(String.format("http://api.openweathermap.org/data/2.5/forecast/daily?q=%s&mode=json&units=%s&cnt=7",
-                    mSharedPreferences.getString("pref_location", "Plovdiv"),
-                    prefUnits));
-            InputStream inputStream = url.openStream();
-            try {
-                BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
-                StringBuilder total = new StringBuilder();
-                String line;
-                while ((line = r.readLine()) != null) {
-                    total.append(line);
-                }
-
-                return total.toString();
-            } finally {
-                inputStream.close();
-            }
-        } catch (Throwable t) {
-            Log.e("Sunshine", t.getMessage(), t);
-            return null;
-        }
-    }
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(
@@ -216,5 +175,53 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         adapter.swapCursor(null);
+    }
+
+    public static class WeatherFetcher extends AsyncTask<String, Void, Void> {
+
+        private String getForecast(String location, String units) {
+            try {
+                URL url = new URL(String.format("http://api.openweathermap.org/data/2.5/forecast/daily?q=%s&mode=json&units=%s&cnt=7",
+                        location,
+                        units));
+                InputStream inputStream = url.openStream();
+                try {
+                    BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
+                    StringBuilder total = new StringBuilder();
+                    String line;
+                    while ((line = r.readLine()) != null) {
+                        total.append(line);
+                    }
+
+                    return total.toString();
+                } finally {
+                    inputStream.close();
+                }
+            } catch (Throwable t) {
+                Log.e("Sunshine", t.getMessage(), t);
+                return null;
+            }
+        }
+
+
+        @Override
+        protected Void doInBackground(String... params) {
+            String data = getForecast(params[0], params[1]);
+            List<Forecast> forecasts = parseForecast(data);
+
+            for (Forecast forecast : forecasts) {
+                ContentValues values = new ContentValues();
+                values.put(WeatherContract.Forecast.COLUMN_DATE, forecast.timestamp);
+                values.put(WeatherContract.Forecast.COLUMN_FORECAST, forecast.desc);
+                values.put(WeatherContract.Forecast.COLUMN_LOCATION, 1);
+                Uri row = getActivity().getContentResolver().insert(
+                        WeatherContract.Forecast.CONTENT_URI,
+                        values
+                );
+                Log.d(TAG, "added weather with uri: " + row);
+            }
+
+            return null;
+        }
     }
 }
