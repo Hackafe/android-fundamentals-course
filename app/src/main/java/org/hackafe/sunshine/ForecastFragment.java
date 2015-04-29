@@ -57,6 +57,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -81,10 +82,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         collection.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Forecast item = (Forecast) adapter.getItem(position);
+                Cursor cursor = (Cursor) adapter.getItem(position);
                 Intent intent = new Intent(getActivity(), DayForecast.class);
-                intent.putExtra("TIMESTAMP", item.timestamp);
-                intent.putExtra(Intent.EXTRA_TEXT, item.desc);
+                intent.putExtra("TIMESTAMP", cursor.getLong(WeatherContract.Forecast.INDEX_DATE));
+                intent.putExtra(Intent.EXTRA_TEXT, cursor.getString(WeatherContract.Forecast.INDEX_FORECAST));
                 startActivity(intent);
 
             }
@@ -108,10 +109,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 // Uri uri,
                 WeatherContract.Forecast.CONTENT_URI,
                 // String[] projection,
-                new String[]{
-                        WeatherContract.Forecast._ID,
-                        WeatherContract.Forecast.COLUMN_FORECAST
-                },
+                WeatherContract.Forecast.PROJECTION,
                 // String selection,
                 null,
                 // String[] selectionArgs,
@@ -141,7 +139,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
         private String getForecast(String location, String units) {
             try {
-                URL url = new URL(String.format("http://api.openweathermap.org/data/2.5/forecast/daily?q=%s&mode=json&units=%s&cnt=7",
+                URL url = new URL(String.format("http://api.openweathermap.org/data/2.5/forecast/daily?q=%s&mode=json&units=%s&cnt=14",
                         location,
                         units));
                 InputStream inputStream = url.openStream();
@@ -229,6 +227,11 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                         values
                 );
                 Log.d(TAG, "added weather with uri: " + row);
+                try {
+                    Thread.sleep(2500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
 
             return null;
