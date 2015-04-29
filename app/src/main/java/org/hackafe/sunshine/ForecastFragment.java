@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -164,6 +165,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         private List<Forecast> parseForecast(String data, String prefUnits) {
             try {
                 List<Forecast> forecastList = new ArrayList<>();
+
+                if (TextUtils.isEmpty(data)) return forecastList;
                 // parse String so we have JSONObject
                 JSONObject obj = new JSONObject(data);
                 // get "list" field as array
