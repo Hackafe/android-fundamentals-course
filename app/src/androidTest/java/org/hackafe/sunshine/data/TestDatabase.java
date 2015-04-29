@@ -192,5 +192,23 @@ public class TestDatabase extends AndroidTestCase {
 
         assertTrue("expected forecast != -1, got " + forecastId, forecastId != -1);
     }
+
+    public void testUpdateForecast() {
+        ContentValues locationValues = new ContentValues();
+        locationValues.put(Forecast.COLUMN_DATE, 1);
+        locationValues.put(Forecast.COLUMN_LOCATION, 1);
+
+        // old value
+        locationValues.put(Forecast.COLUMN_FORECAST, "rainy day");
+        helper.insertForecast(locationValues);
+
+        // new value
+        locationValues.put(Forecast.COLUMN_FORECAST, "sunny day");
+        helper.insertForecast(locationValues);
+
+        // check count
+        Cursor cursor = db.rawQuery("select * from "+Forecast.TABLE_NAME, null);
+        assertEquals(1, cursor.getCount());
+    }
 }
 
