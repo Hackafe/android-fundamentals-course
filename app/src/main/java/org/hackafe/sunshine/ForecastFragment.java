@@ -81,6 +81,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 },
                 0);
         final ListView collection = (ListView) rootView.findViewById(R.id.container);
+        final View emptyView = rootView.findViewById(R.id.empty);
+        collection.setEmptyView(emptyView);
         collection.setAdapter(adapter);
 
         collection.setOnItemClickListener(new AdapterView.OnItemClickListener() {
