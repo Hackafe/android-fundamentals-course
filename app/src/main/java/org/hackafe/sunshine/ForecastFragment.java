@@ -158,11 +158,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             }
         }
 
-        private List<Forecast> parseForecast(String data, String prefUnits) {
+        private void parseForecast(String data, String prefUnits) {
             try {
-                List<Forecast> forecastList = new ArrayList<>();
+                if (TextUtils.isEmpty(data)) return;
 
-                if (TextUtils.isEmpty(data)) return forecastList;
                 // parse String so we have JSONObject
                 JSONObject obj = new JSONObject(data);
                 // get "list" field as array
@@ -195,16 +194,27 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                     else
                         degrees = "F";
 
-                    Forecast forecast = new Forecast();
-                    forecast.desc = String.format("%s - %s   %.1f°%s", dateStr, description, dayTemp, degrees);
-                    forecast.timestamp = dt;
-                    forecastList.add(forecast);
+                    ContentValues forecast = new ContentValues();
+                    forecast.put(Forecast.COLUMN_FORECAST, String.format("%s - %s   %.1f°%s", dateStr, description, dayTemp, degrees));
+                    forecast.put(Forecast.COLUMN_DATE, dt);
+                    forecast.put(Forecast.COLUMN_LOCATION, 1);
+                    insertForecast(forecast);
                     Log.d("Sunshine", "forecast = " + forecast);
                 }
-                return forecastList;
             } catch (Throwable t) {
                 Log.e("Sunshine", t.getMessage(), t);
-                return null;
+            }
+        }
+
+        private void insertForecast(ContentValues forecast) {
+            Uri row = contentResolver.insert(
+                    WeatherContract.Forecast.CONTENT_URI,
+                    forecast
+            );
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
 
@@ -214,24 +224,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             String units = params[1];
 
             String data = getForecast(location, units);
-            List<Forecast> forecasts = parseForecast(data, units);
-
-            for (Forecast forecast : forecasts) {
-                ContentValues values = new ContentValues();
-                values.put(WeatherContract.Forecast.COLUMN_DATE, forecast.timestamp);
-                values.put(WeatherContract.Forecast.COLUMN_FORECAST, forecast.desc);
-                values.put(WeatherContract.Forecast.COLUMN_LOCATION, 1);
-                Uri row = contentResolver.insert(
-                        WeatherContract.Forecast.CONTENT_URI,
-                        values
-                );
-                Log.d(TAG, "added weather with uri: " + row);
-                try {
-                    Thread.sleep(2500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            parseForecast(data, units);
 
             return null;
         }

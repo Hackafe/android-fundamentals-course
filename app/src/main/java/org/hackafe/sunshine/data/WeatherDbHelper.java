@@ -43,14 +43,6 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void insertForecast(long location_id, org.hackafe.sunshine.Forecast forecast) {
-        ContentValues values = new ContentValues();
-        values.put(Forecast.COLUMN_FORECAST, forecast.desc);
-        values.put(Forecast.COLUMN_DATE, forecast.timestamp);
-        values.put(Forecast.COLUMN_LOCATION, location_id);
-        insertForecast(values);
-    }
-
     public long insertForecast(ContentValues values) {
         SQLiteDatabase db = getWritableDatabase();
         return db.replace(Forecast.TABLE_NAME, null, values);
