@@ -13,7 +13,7 @@ import static org.hackafe.sunshine.data.WeatherContract.*;
 public class WeatherDbHelper extends SQLiteOpenHelper {
 
     static final String DATABASE_NAME = "weather.db";
-    static final int DATABASE_VERSION = 7;
+    static final int DATABASE_VERSION = 8;
 
     public WeatherDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -27,7 +27,8 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
                 "location_id INTEGER NOT NULL," +
                 "weather TEXT NOT NULL," +
-                "fordate INTEGER NOT NULL" +
+                "fordate INTEGER NOT NULL," +
+                "UNIQUE(fordate)" +
                 ");\n");
 
         db.execSQL("DROP TABLE IF EXISTS locations;");
@@ -52,7 +53,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
 
     public long insertForecast(ContentValues values) {
         SQLiteDatabase db = getWritableDatabase();
-        return db.insert(Forecast.TABLE_NAME, null, values);
+        return db.replace(Forecast.TABLE_NAME, null, values);
     }
 
     public long insertLocation(ContentValues values) {
