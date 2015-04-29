@@ -1,7 +1,9 @@
 package org.hackafe.sunshine;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
@@ -16,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import org.hackafe.sunshine.data.WeatherContract;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -27,11 +30,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import static org.hackafe.sunshine.data.WeatherContract.*;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class ForecastFragment extends Fragment {
+    private static final String TAG = "ForecastFragment";
     SharedPreferences mSharedPreferences;
     String prefUnits;
 
@@ -52,10 +57,22 @@ public class ForecastFragment extends Fragment {
                 .permitAll().build();
         StrictMode.setThreadPolicy(policy);
         String data = getForecast();
-        List<Forecast> forecast = parseForecast(data);
+        List<Forecast> forecasts = parseForecast(data);
+
+        for (Forecast forecast: forecasts) {
+            ContentValues values = new ContentValues();
+            values.put(WeatherContract.Forecast.COLUMN_DATE, forecast.timestamp);
+            values.put(WeatherContract.Forecast.COLUMN_FORECAST, forecast.desc);
+            values.put(WeatherContract.Forecast.COLUMN_LOCATION, 1);
+            Uri row = getActivity().getContentResolver().insert(
+                    WeatherContract.Forecast.CONTENT_URI,
+                    values
+            );
+            Log.d(TAG, "added weather with uri: "+row);
+        }
 
 
-        final ForecastAdapter adapter = new ForecastAdapter(inflater, forecast);
+        final ForecastAdapter adapter = new ForecastAdapter(inflater, forecasts);
         final ListView collection = (ListView) rootView.findViewById(R.id.container);
         collection.setAdapter(adapter);
 
