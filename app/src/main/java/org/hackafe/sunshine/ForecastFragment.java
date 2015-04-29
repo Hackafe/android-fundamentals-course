@@ -1,5 +1,6 @@
 package org.hackafe.sunshine;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,6 +27,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
+import org.hackafe.sunshine.data.WeatherContentProvider;
 import org.hackafe.sunshine.data.WeatherContract;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -59,7 +61,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        new WeatherFetcher().execute(
+        new WeatherFetcher(getActivity().getContentResolver()).execute(
                 mSharedPreferences.getString("pref_location", "Plovdiv"),
                 mSharedPreferences.getString("pref_units", "Metric")
         );
@@ -98,54 +100,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         return rootView;
     }
 
-    private List<Forecast> parseForecast(String data) {
-        try {
-            List<Forecast> forecastList = new ArrayList<>();
-            // parse String so we have JSONObject
-            JSONObject obj = new JSONObject(data);
-            // get "list" field as array
-            JSONArray list = obj.getJSONArray("list");
-            // iterate array and get forecast
-            for (int i = 0; i < list.length(); i++) {
-                // get "i"th forecast
-                JSONObject forecastObj = list.getJSONObject(i);
-
-                // get "temp" object
-                JSONObject temp = forecastObj.getJSONObject("temp");
-                // extract "day" temperature
-                double dayTemp = temp.getDouble("day");
-
-                // get "weather" array
-                JSONArray weather = forecastObj.getJSONArray("weather");
-                // get 1st weather
-                JSONObject weather1 = weather.getJSONObject(0);
-
-                // extract "description" from 1st weather
-                String description = weather1.getString("description");
-
-                // extract "dt" date time in unix epoch format
-                long dt = forecastObj.getLong("dt");
-                String dateStr = SimpleDateFormat.getDateInstance().format(new Date(dt * 1000));
-                String degrees;
-
-                if (prefUnits.equals("Metric"))
-                    degrees = "C";
-                else
-                    degrees = "F";
-
-                Forecast forecast = new Forecast();
-                forecast.desc = String.format("%s - %s   %.1f°%s", dateStr, description, dayTemp, degrees);
-                forecast.timestamp = dt;
-                forecastList.add(forecast);
-                Log.d("Sunshine", "forecast = " + forecast);
-            }
-            return forecastList;
-        } catch (Throwable t) {
-            Log.e("Sunshine", t.getMessage(), t);
-            return null;
-        }
-    }
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(
@@ -179,6 +133,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     public static class WeatherFetcher extends AsyncTask<String, Void, Void> {
 
+        private ContentResolver contentResolver;
+
+        public WeatherFetcher(ContentResolver contentResolver) {
+            this.contentResolver = contentResolver;
+        }
+
         private String getForecast(String location, String units) {
             try {
                 URL url = new URL(String.format("http://api.openweathermap.org/data/2.5/forecast/daily?q=%s&mode=json&units=%s&cnt=7",
@@ -203,18 +163,68 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             }
         }
 
+        private List<Forecast> parseForecast(String data, String prefUnits) {
+            try {
+                List<Forecast> forecastList = new ArrayList<>();
+                // parse String so we have JSONObject
+                JSONObject obj = new JSONObject(data);
+                // get "list" field as array
+                JSONArray list = obj.getJSONArray("list");
+                // iterate array and get forecast
+                for (int i = 0; i < list.length(); i++) {
+                    // get "i"th forecast
+                    JSONObject forecastObj = list.getJSONObject(i);
+
+                    // get "temp" object
+                    JSONObject temp = forecastObj.getJSONObject("temp");
+                    // extract "day" temperature
+                    double dayTemp = temp.getDouble("day");
+
+                    // get "weather" array
+                    JSONArray weather = forecastObj.getJSONArray("weather");
+                    // get 1st weather
+                    JSONObject weather1 = weather.getJSONObject(0);
+
+                    // extract "description" from 1st weather
+                    String description = weather1.getString("description");
+
+                    // extract "dt" date time in unix epoch format
+                    long dt = forecastObj.getLong("dt");
+                    String dateStr = SimpleDateFormat.getDateInstance().format(new Date(dt * 1000));
+                    String degrees;
+
+                    if (prefUnits.equals("Metric"))
+                        degrees = "C";
+                    else
+                        degrees = "F";
+
+                    Forecast forecast = new Forecast();
+                    forecast.desc = String.format("%s - %s   %.1f°%s", dateStr, description, dayTemp, degrees);
+                    forecast.timestamp = dt;
+                    forecastList.add(forecast);
+                    Log.d("Sunshine", "forecast = " + forecast);
+                }
+                return forecastList;
+            } catch (Throwable t) {
+                Log.e("Sunshine", t.getMessage(), t);
+                return null;
+            }
+        }
 
         @Override
         protected Void doInBackground(String... params) {
-            String data = getForecast(params[0], params[1]);
-            List<Forecast> forecasts = parseForecast(data);
+            String location = params[0];
+            String units = params[1];
+
+            String data = getForecast(location, units);
+            List<Forecast> forecasts = parseForecast(data, units);
 
             for (Forecast forecast : forecasts) {
                 ContentValues values = new ContentValues();
                 values.put(WeatherContract.Forecast.COLUMN_DATE, forecast.timestamp);
                 values.put(WeatherContract.Forecast.COLUMN_FORECAST, forecast.desc);
                 values.put(WeatherContract.Forecast.COLUMN_LOCATION, 1);
-                Uri row = getActivity().getContentResolver().insert(
+                Uri row = contentResolver.insert(
                         WeatherContract.Forecast.CONTENT_URI,
                         values
                 );
