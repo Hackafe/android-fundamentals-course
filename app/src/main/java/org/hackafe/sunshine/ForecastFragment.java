@@ -76,7 +76,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 },
                 new int[]{
                         R.id.list_item_forecast_listview
-                });
+                },
+                0);
         final ListView collection = (ListView) rootView.findViewById(R.id.container);
         collection.setAdapter(adapter);
 
@@ -91,11 +92,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
             }
         });
-
-        final EditText countInput = (EditText) rootView.findViewById(R.id.countInput);
-
-
-        Button addMoreBtn = (Button) rootView.findViewById(R.id.btn_add_more_items);
 
         getLoaderManager().initLoader(1, null, this);
 
