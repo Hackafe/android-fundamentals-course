@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -25,11 +26,14 @@ import static org.hackafe.sunshine.data.WeatherContract.*;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,WeatherFetcher.Listener {
     private static final String TAG = "ForecastFragment";
     SharedPreferences mSharedPreferences;
     private SimpleCursorAdapter adapter;
     private long locationId;
+    private View progressBar;
+    private View loadingText;
+    private View nodataText;
 
     public ForecastFragment() {
     }
@@ -64,12 +68,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         String location = mSharedPreferences.getString("pref_location", "Plovdiv");
         locationId = getLocationId(location);
 
-        new WeatherFetcher(getActivity().getContentResolver()).execute(
-                Long.toString(locationId),
-                location,
-                mSharedPreferences.getString("pref_units", "Metric")
-        );
-
         adapter = new SimpleCursorAdapter(getActivity(),
                 R.layout.list_item_forecast,
                 null,
@@ -97,7 +95,21 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             }
         });
 
+        progressBar = rootView.findViewById(R.id.progressBar);
+        loadingText = rootView.findViewById(R.id.loading_text);
+        nodataText = rootView.findViewById(R.id.nodata_text);
+
         getLoaderManager().initLoader(1, null, this);
+
+        progressBar.setVisibility(View.VISIBLE);
+        loadingText.setVisibility(View.VISIBLE);
+        nodataText.setVisibility(View.GONE);
+
+        AsyncTask<String, Void, Void> asyncTask = new WeatherFetcher(getActivity().getContentResolver(), this).execute(
+                Long.toString(locationId),
+                location,
+                mSharedPreferences.getString("pref_units", "Metric")
+        );
 
         return rootView;
     }
@@ -130,4 +142,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         adapter.swapCursor(null);
     }
 
+    @Override
+    public void onWeatherFetcherDone() {
+        progressBar.setVisibility(View.GONE);
+        loadingText.setVisibility(View.GONE);
+        nodataText.setVisibility(View.VISIBLE);
+    }
 }

@@ -19,16 +19,24 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
 * Created by groupsky on 29.04.15.
 */
 public class WeatherFetcher extends AsyncTask<String, Void, Void> {
 
+    private final Listener listener;
+
+    public interface Listener {
+        void onWeatherFetcherDone();
+    }
+
     private ContentResolver contentResolver;
 
-    public WeatherFetcher(ContentResolver contentResolver) {
+    public WeatherFetcher(ContentResolver contentResolver, Listener listener) {
         this.contentResolver = contentResolver;
+        this.listener = listener;
     }
 
     private String getForecast(String location, String units) {
@@ -117,6 +125,11 @@ public class WeatherFetcher extends AsyncTask<String, Void, Void> {
 
     @Override
     protected Void doInBackground(String... params) {
+        try {
+            Thread.sleep(2500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         long locationId = Long.parseLong(params[0]);
         String location = params[1];
         String units = params[2];
@@ -127,4 +140,9 @@ public class WeatherFetcher extends AsyncTask<String, Void, Void> {
         return null;
     }
 
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+        listener.onWeatherFetcherDone();
+    }
 }
