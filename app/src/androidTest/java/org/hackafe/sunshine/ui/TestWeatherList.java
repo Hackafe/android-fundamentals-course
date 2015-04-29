@@ -13,7 +13,7 @@ public class TestWeatherList extends ActivityInstrumentationTestCase2 {
         super(MainActivity.class);
     }
 
-    public void testFailure() {
+    public void _testFailure() {
         assertTrue(false);
     }
 }
