@@ -53,7 +53,7 @@ public class WeatherFetcher extends AsyncTask<String, Void, Void> {
         }
     }
 
-    private void parseForecast(String data, String prefUnits) {
+    private void parseForecast(String data, long locationId, String prefUnits) {
         try {
             if (TextUtils.isEmpty(data)) return;
 
@@ -92,7 +92,7 @@ public class WeatherFetcher extends AsyncTask<String, Void, Void> {
                 ContentValues forecast = new ContentValues();
                 forecast.put(WeatherContract.Forecast.COLUMN_FORECAST, String.format("%s - %s   %.1f°%s", dateStr, description, dayTemp, degrees));
                 forecast.put(WeatherContract.Forecast.COLUMN_DATE, dt);
-                forecast.put(WeatherContract.Forecast.COLUMN_LOCATION, 1);
+                forecast.put(WeatherContract.Forecast.COLUMN_LOCATION, locationId);
                 insertForecast(forecast);
                 Log.d("Sunshine", "forecast = " + forecast);
             }
@@ -118,9 +118,15 @@ public class WeatherFetcher extends AsyncTask<String, Void, Void> {
         String location = params[0];
         String units = params[1];
 
+        long locationId = getLocationId(location);
+
         String data = getForecast(location, units);
-        parseForecast(data, units);
+        parseForecast(data, locationId, units);
 
         return null;
+    }
+
+    private long getLocationId(String location) {
+        return 1;
     }
 }
