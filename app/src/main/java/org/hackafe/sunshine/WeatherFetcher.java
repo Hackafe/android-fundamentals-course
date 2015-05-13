@@ -2,14 +2,11 @@ package org.hackafe.sunshine;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
 
-import org.hackafe.sunshine.data.WeatherContract;
-import static org.hackafe.sunshine.data.WeatherContract.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -19,7 +16,9 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
+import java.util.Locale;
+
+import static org.hackafe.sunshine.data.WeatherContract.Forecast;
 
 /**
 * Created by groupsky on 29.04.15.
@@ -40,10 +39,13 @@ public class WeatherFetcher extends AsyncTask<String, Void, Void> {
     }
 
     private String getForecast(String location, String units) {
+
+
         try {
-            URL url = new URL(String.format("http://api.openweathermap.org/data/2.5/forecast/daily?q=%s&mode=json&units=%s&cnt=14",
+            URL url = new URL(String.format("http://api.openweathermap.org/data/2.5/forecast/daily?q=%s&mode=json&units=%s&cnt=14&lang=%s",
                     location,
-                    units));
+                    units,
+                    Locale.getDefault().getCountry()));
             InputStream inputStream = url.openStream();
             try {
                 BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
@@ -116,20 +118,10 @@ public class WeatherFetcher extends AsyncTask<String, Void, Void> {
                 Forecast.CONTENT_URI,
                 forecast
         );
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
     protected Void doInBackground(String... params) {
-        try {
-            Thread.sleep(2500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         long locationId = Long.parseLong(params[0]);
         String location = params[1];
         String units = params[2];

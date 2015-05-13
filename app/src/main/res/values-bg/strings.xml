@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sunshine</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Настройки</string>
+    <string name="title_activity_day_forecast">Дневна прогноза</string>
+    <string name="action_location_map">Карта</string>
+    <string name="info_day_forecast_label">Прогноза за: %s</string>
+</resources>

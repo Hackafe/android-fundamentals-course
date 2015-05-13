@@ -3,16 +3,15 @@ package org.hackafe.sunshine;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.support.v7.widget.ShareActionProvider;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
-import java.util.Locale;
 
 
 public class DayForecast extends ActionBarActivity {
@@ -25,12 +24,18 @@ public class DayForecast extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_day_forecast);
 
+
+
         Intent intent = getIntent();
-        SimpleDateFormat date = new SimpleDateFormat("MMM dd yyyy", Locale.US);
+        SimpleDateFormat date = new SimpleDateFormat();
         TextView txtForDate = (TextView) findViewById(R.id.txtForDate);
         TextView txtDayForecast = (TextView) findViewById(R.id.txtDayForecast);
 
-        txtForDate.setText("Forecast for date " + date.format(intent.getLongExtra("TIMESTAMP", System.currentTimeMillis()) * 1000));
+
+        String formatedForDay = getString(R.string.info_day_forecast_label,
+                date.format(
+                        intent.getLongExtra("TIMESTAMP", System.currentTimeMillis()) * 1000));
+        txtForDate.setText(formatedForDay);
         txtDayForecast.setText(intent.getStringExtra(Intent.EXTRA_TEXT));
 
         //Make a string from the HashTag and the weather forecast
