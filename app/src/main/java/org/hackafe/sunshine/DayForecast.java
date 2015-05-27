@@ -53,7 +53,6 @@ public class DayForecast extends ActionBarActivity {
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         getSupportActionBar().setBackgroundDrawable(new
                 ColorDrawable(Color.parseColor("#ffffff")));
-        getSupportActionBar();
 
     }
 

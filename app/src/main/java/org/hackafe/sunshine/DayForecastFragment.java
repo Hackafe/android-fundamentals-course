@@ -1,9 +1,15 @@
 package org.hackafe.sunshine;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -17,6 +23,7 @@ public class DayForecastFragment extends Fragment {
 
     private long timestamp;
     private String details;
+    private TextView txtDayForecast;
 
     public static DayForecastFragment newInstance(long timestamp, String details) {
         DayForecastFragment fragment = new DayForecastFragment();
@@ -29,7 +36,7 @@ public class DayForecastFragment extends Fragment {
 
 
     public DayForecastFragment() {
-        // Required empty public constructor
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -53,7 +60,7 @@ public class DayForecastFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         SimpleDateFormat date = new SimpleDateFormat();
         TextView txtForDate = (TextView) view.findViewById(R.id.txtForDate);
-        TextView txtDayForecast = (TextView) view.findViewById(R.id.txtDayForecast);
+        txtDayForecast = (TextView) view.findViewById(R.id.txtDayForecast);
 
 
         String formatedForDay = getString(R.string.info_day_forecast_label,
@@ -61,5 +68,34 @@ public class DayForecastFragment extends Fragment {
         txtForDate.setText(formatedForDay);
         txtDayForecast.setText(this.details);
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.menu_day_forecast, menu);
+
+
+
+        // Locate MenuItem with ShareActionProvider
+        MenuItem item = menu.findItem(R.id.menu_item_share);
+        // Fetch and store ShareActionProvider
+        ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(getForecastShareIntent());
+        }
+    }
+
+    private Intent getForecastShareIntent() {
+        String shareHashTag = "#SunshineApp " + txtDayForecast.getText();
+
+        //Create Intent
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareHashTag);
+        return shareIntent;
     }
 }
