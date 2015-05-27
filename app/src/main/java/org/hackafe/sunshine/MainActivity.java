@@ -5,27 +5,14 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
-import android.view.inputmethod.EditorInfo;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
+
+import de.greenrobot.event.EventBus;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -52,6 +39,16 @@ public class MainActivity extends ActionBarActivity {
                     .commit();
         }
     }
+
+    public void onEvent(ForecastItemSelectedEvent event) {
+        Log.d("MainActivity", "OnEvent --> ForecastItemSelectedEvent");
+        Intent intent = new Intent(this, DayForecast.class);
+        intent.putExtra("TIMESTAMP", event.timestamp);
+        intent.putExtra(Intent.EXTRA_TEXT, event.description);
+        startActivity(intent);
+
+    }
+
 
 
     @Override
@@ -86,7 +83,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
+        EventBus.getDefault().unregister(this);
         prefLocation = mSharedPreferences.getString("pref_location", "");
         prefUnits = mSharedPreferences.getString("pref_units", "Metric");
     }
@@ -94,12 +91,13 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        EventBus.getDefault().register(this);
         if (!prefLocation.equals(mSharedPreferences.getString("pref_location", "")) ||
                 !prefUnits.equals(mSharedPreferences.getString("pref_units", "Metric"))) {
             startActivity(new Intent(this, MainActivity.class));
             this.finish();
         }
     }
+
 
 }

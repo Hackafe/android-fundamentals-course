@@ -2,7 +2,6 @@ package org.hackafe.sunshine;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -21,7 +20,10 @@ import android.widget.SimpleCursorAdapter;
 
 import org.hackafe.sunshine.data.WeatherContract;
 
-import static org.hackafe.sunshine.data.WeatherContract.*;
+import de.greenrobot.event.EventBus;
+
+import static org.hackafe.sunshine.data.WeatherContract.Forecast;
+import static org.hackafe.sunshine.data.WeatherContract.Location;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -34,6 +36,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private View progressBar;
     private View loadingText;
     private View nodataText;
+    private ListView collection;
 
     public ForecastFragment() {
     }
@@ -78,20 +81,24 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                         R.id.list_item_forecast_listview
                 },
                 0);
-        final ListView collection = (ListView) rootView.findViewById(R.id.container);
+        collection = (ListView) rootView.findViewById(R.id.container);
         final View emptyView = rootView.findViewById(R.id.empty);
         collection.setEmptyView(emptyView);
         collection.setAdapter(adapter);
+
+
 
         collection.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor cursor = (Cursor) adapter.getItem(position);
-                Intent intent = new Intent(getActivity(), DayForecast.class);
-                intent.putExtra("TIMESTAMP", cursor.getLong(WeatherContract.Forecast.INDEX_DATE));
-                intent.putExtra(Intent.EXTRA_TEXT, cursor.getString(WeatherContract.Forecast.INDEX_FORECAST));
-                startActivity(intent);
 
+                long timestamp = cursor.getLong(Forecast.INDEX_DATE);
+                String description = cursor.getString(Forecast.INDEX_FORECAST);
+                ForecastItemSelectedEvent event = new ForecastItemSelectedEvent();
+                event.timestamp = timestamp;
+                event.description = description;
+                EventBus.getDefault().post(event);
             }
         });
 
