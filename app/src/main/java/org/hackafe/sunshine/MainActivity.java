@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -30,6 +31,8 @@ public class MainActivity extends ActionBarActivity {
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         getSupportActionBar().setBackgroundDrawable(new
                 ColorDrawable(Color.parseColor("#ffffff")));
 
@@ -42,11 +45,12 @@ public class MainActivity extends ActionBarActivity {
 
     public void onEvent(ForecastItemSelectedEvent event) {
         Log.d("MainActivity", "OnEvent --> ForecastItemSelectedEvent");
-        Intent intent = new Intent(this, DayForecast.class);
-        intent.putExtra("TIMESTAMP", event.timestamp);
-        intent.putExtra(Intent.EXTRA_TEXT, event.description);
-        startActivity(intent);
-
+        Fragment detailsFragment = DayForecastFragment.newInstance(event.timestamp, event.description);
+         getSupportFragmentManager().beginTransaction()
+                 .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
+                 .replace(R.id.container, detailsFragment)
+                 .addToBackStack(null).
+                 commit();
     }
 
 
@@ -76,6 +80,12 @@ public class MainActivity extends ActionBarActivity {
             startActivity(intent);
             return true;
         }
+
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
 
         return super.onOptionsItemSelected(item);
     }
